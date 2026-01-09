@@ -1,13 +1,23 @@
 <!doctype html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>my-calendar</title>
+    <title>Business Calendar</title>
+    <!-- Tailwind CSS: デザインを整えるためのツールを読み込みます -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        margin: 0;
+        background-color: #f1f5f9; /* 背景色を設定 */
+      }
+    </style>
   </head>
   <body>
+    <!-- この "root" という名前の場所に、プログラムがカレンダーを描き込みます -->
     <div id="root"></div>
+    
+    <!-- 実際のプログラム（スイッチ）を読み込む重要な一行です -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
