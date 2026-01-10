@@ -229,16 +229,16 @@ export default function App() {
 
       <div className="flex flex-col items-center w-full min-h-screen p-4 md:p-10 lg:p-16">
         <div className="w-full max-w-6xl">
-          <header className="mb-12 flex flex-col md:flex-row justify-between items-center bg-white p-8 md:p-10 rounded-[40px] shadow-sm border border-slate-200 gap-8">
-            <div className="flex items-center gap-5 text-indigo-600">
-              <div className="bg-indigo-100 p-3 rounded-2xl">
-                <Calendar size={40} strokeWidth={3} />
+          <header className="mb-8 flex flex-col md:flex-row justify-between items-center bg-white p-4 md:p-6 rounded-3xl shadow-sm border border-slate-200 gap-4">
+            <div className="flex items-center gap-3 text-indigo-600">
+              <div className="bg-indigo-100 p-2 rounded-xl">
+                <Calendar size={24} strokeWidth={3} />
               </div>
-              <h1 className="text-4xl md:text-5xl font-black tracking-tighter italic uppercase leading-none">Whale Calendar</h1>
+              <h1 className="text-xl md:text-2xl font-black tracking-tighter italic uppercase leading-none">Whale Calendar</h1>
             </div>
-            <div className="flex items-center gap-8">
-              {saving && <span className="text-sm text-indigo-500 font-black animate-pulse uppercase tracking-widest">Saving...</span>}
-              <button onClick={() => isEditMode ? setIsEditMode(false) : setShowPassModal(true)} className={`px-10 py-4 rounded-2xl font-black text-lg shadow-lg transition-all active:scale-95 ${isEditMode ? 'bg-slate-900 text-white' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}>
+            <div className="flex items-center gap-4">
+              {saving && <span className="text-[10px] text-indigo-500 font-black animate-pulse uppercase tracking-widest">Saving...</span>}
+              <button onClick={() => isEditMode ? setIsEditMode(false) : setShowPassModal(true)} className={`px-4 py-2 rounded-xl font-black text-sm shadow-md transition-all active:scale-95 ${isEditMode ? 'bg-slate-900 text-white' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}>
                 {isEditMode ? '編集を終了する' : '編集モード'}
               </button>
             </div>
@@ -255,10 +255,17 @@ export default function App() {
                 d.setDate(d.getDate() + 1); 
               }
 
+              // 和暦計算
+              const reiwaYear = year - 2018;
+              const showaYear = year - 1925;
+
               return (
                 <div key={`${year}-${month}`} className="bg-white rounded-[48px] shadow-sm border border-slate-200 overflow-hidden">
-                  <div className="bg-slate-50 px-10 py-6 border-b font-black text-slate-800 text-3xl">
-                    {year}年 { month + 1 }月
+                  <div className="bg-slate-50 px-10 py-6 border-b font-black text-slate-800 flex items-baseline gap-4">
+                    <span className="text-3xl">{year}年 { month + 1 }月</span>
+                    <span className="text-sm text-slate-400 font-bold uppercase tracking-tight">
+                      (令和{reiwaYear}年 / 昭和{showaYear}年)
+                    </span>
                   </div>
                   <div className="grid grid-cols-7 text-center text-sm font-black uppercase py-4 border-b bg-slate-50/50 tracking-[0.2em]">
                     {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((name, i) => (
