@@ -6,9 +6,9 @@ import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken }
 
 /**
  * アプリケーション設定 & バージョン情報
- * v3.7.5: 画面中央配置のレイアウト構造を最終強化
+ * v3.7.6: WEB公開時の中央配置を最優先で強制するレイアウト修正
  */
-const APP_VERSION = "3.7.5";
+const APP_VERSION = "3.7.6";
 const UPDATE_DATE = "2026.01.10";
 
 // Firebaseの設定
@@ -22,17 +22,11 @@ const firebaseConfig = {
   measurementId: "G-M2FHT3HR5Q"
 };
 
-// IDを固定
 const appId = "my-calendar-id";
-
-// 初期化
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-/**
- * ユーティリティ
- */
 const toLocalDateString = (date) => {
   if (!(date instanceof Date)) return "";
   const y = date.getFullYear();
@@ -97,23 +91,12 @@ export default function App() {
     const initAuth = async () => {
       try {
         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          try {
-            await signInWithCustomToken(auth, __initial_auth_token);
-          } catch {
-            await signInAnonymously(auth);
-          }
-        } else {
-          await signInAnonymously(auth);
-        }
-      } catch (err) {
-        setErrorMsg(`認証エラー: ${err.message}`);
-      }
+          try { await signInWithCustomToken(auth, __initial_auth_token); } catch { await signInAnonymously(auth); }
+        } else { await signInAnonymously(auth); }
+      } catch (err) { setErrorMsg(`認証エラー: ${err.message}`); }
     };
     initAuth();
-    const unsubscribe = onAuthStateChanged(auth, (u) => { 
-      setUser(u);
-      if (u) setErrorMsg(null);
-    });
+    const unsubscribe = onAuthStateChanged(auth, (u) => { setUser(u); if (u) setErrorMsg(null); });
     return () => unsubscribe();
   }, []);
 
@@ -121,14 +104,9 @@ export default function App() {
     if (!user) return;
     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'calendar', 'state');
     const unsubscribe = onSnapshot(docRef, (snap) => {
-      if (snap.exists()) {
-        setSchedule(snap.data().schedule || {});
-      }
+      if (snap.exists()) { setSchedule(snap.data().schedule || {}); }
       setLoading(false);
-    }, (err) => {
-      setErrorMsg(`読み取りエラー: ${err.message}`);
-      setLoading(false);
-    });
+    }, (err) => { setErrorMsg(`読み取りエラー: ${err.message}`); setLoading(false); });
     return () => unsubscribe();
   }, [user]);
 
@@ -152,11 +130,7 @@ export default function App() {
     try {
       const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'calendar', 'state');
       await setDoc(docRef, { schedule: ns, updatedAt: new Date().toISOString() }, { merge: true });
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSaving(false);
-    }
+    } catch (err) { console.error(err); } finally { setSaving(false); }
   };
 
   const SlotDisplay = ({ status, label }) => {
@@ -195,7 +169,7 @@ export default function App() {
   );
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 w-full">
       <div className="flex flex-col items-center gap-4 text-indigo-600">
         <Loader2 className="animate-spin" size={48} strokeWidth={3} />
         <span className="font-black text-slate-400 tracking-widest uppercase text-xs">Initializing v{APP_VERSION}...</span>
@@ -204,12 +178,22 @@ export default function App() {
   );
 
   return (
-    /* 中央配置の最終強化: 
-      justify-center を設定し、横幅を w-screen (全画面) に固定することで、
-      中身の max-w-3xl コンテナを確実に真ん中へ誘導します。
+    /* 【重要】中央寄せを強制するためのスタイル追加 
+      html, body, #root などの親要素がどのような設定でも、
+      この App コンポーネントが画面中央に位置するように強制します。
     */
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 w-full flex justify-center overflow-x-hidden">
+    <div className="whale-calendar-app-root min-h-screen bg-slate-50 font-sans text-slate-900 w-full flex flex-col items-center overflow-x-hidden">
       <style>{`
+        /* ブラウザの基本レイアウトを中央寄せにリセット */
+        html, body, #root {
+          margin: 0 !important;
+          padding: 0 !important;
+          width: 100% !important;
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          justify-content: flex-start !important;
+        }
         .bg-stripes {
           background-image: linear-gradient(45deg, #fee2e2 25%, transparent 25%, transparent 50%, #fee2e2 50%, #fee2e2 75%, transparent 75%, transparent);
           background-size: 10px 10px;
@@ -229,15 +213,15 @@ export default function App() {
         </div>
       )}
 
-      {/* カレンダー本体のコンテナ: mx-auto で左右均等を保証 */}
-      <div className="w-full max-w-3xl mx-auto p-2 sm:p-6 md:p-8 lg:p-12 flex flex-col">
+      {/* 最大幅 3xl (約768px) で、中身が常に中央にくるように mx-auto を適用 */}
+      <div className="w-full max-w-3xl mx-auto p-2 sm:p-6 md:p-8 lg:p-12 flex flex-col items-center">
         
         <header className="mb-4 w-full flex flex-row justify-between items-center bg-white py-2 px-4 sm:px-6 rounded-2xl shadow-sm border border-slate-100">
           <div className="flex items-center gap-3 text-indigo-600 shrink-0">
             <Calendar size={20} strokeWidth={2.5} />
             <div className="flex flex-col">
-              <h1 className="text-sm sm:text-xl font-thin tracking-tighter italic uppercase leading-none">Whale Calendar</h1>
-              <div className="flex items-center gap-1 mt-1 opacity-40">
+              <h1 className="text-sm sm:text-xl font-thin tracking-tighter italic uppercase leading-none text-left">Whale Calendar</h1>
+              <div className="flex items-center gap-1 mt-1 opacity-40 justify-start">
                 <Tag size={8} />
                 <span className="text-[8px] font-black tracking-widest uppercase">{APP_VERSION}</span>
               </div>
@@ -272,7 +256,7 @@ export default function App() {
             while (d.getMonth() === month) { days.push(new Date(d)); d.setDate(d.getDate() + 1); }
             const rY = year - 2018; const hY = year - 1988; const sY = year - 1925;
             return (
-              <div key={`${year}-${month}-${mi}`} className="bg-white rounded-[40px] shadow-sm border border-slate-200 overflow-hidden w-full">
+              <div key={`${year}-${month}-${mi}`} className="bg-white rounded-[40px] shadow-sm border border-slate-200 overflow-hidden w-full mx-auto">
                 <div className="bg-slate-50 px-6 sm:px-10 py-5 border-b font-black text-slate-800 flex flex-wrap items-center justify-between gap-4">
                   <div className="flex flex-wrap items-baseline gap-2 sm:gap-4">
                     <span className="text-xl sm:text-2xl">{String(year)}年 { String(month + 1) }月</span>
@@ -340,29 +324,13 @@ export default function App() {
                             </div>
                           ) : (
                             <>
-                              <button onClick={() => {
-                                if(!isEditMode) return;
-                                const next = data.am==='none'?'available':data.am==='available'?'unavailable':'none';
-                                const ns = {...schedule, [ds]:{...data, am:next}};
-                                setSchedule(ns); saveToCloud(ns);
-                              }} disabled={!isEditMode} className="flex flex-1 min-h-0"><SlotDisplay status={data.am} label="午前" /></button>
-                              <button onClick={() => {
-                                if(!isEditMode) return;
-                                const next = data.pm==='none'?'available':data.pm==='available'?'unavailable':'none';
-                                const ns = {...schedule, [ds]:{...data, pm:next}};
-                                setSchedule(ns); saveToCloud(ns);
-                              }} disabled={!isEditMode} className="flex flex-1 min-h-0"><SlotDisplay status={data.pm} label="午後" /></button>
+                              <button onClick={() => { if(!isEditMode) return; const next = data.am==='none'?'available':data.am==='available'?'unavailable':'none'; const ns = {...schedule, [ds]:{...data, am:next}}; setSchedule(ns); saveToCloud(ns); }} disabled={!isEditMode} className="flex flex-1 min-h-0"><SlotDisplay status={data.am} label="午前" /></button>
+                              <button onClick={() => { if(!isEditMode) return; const next = data.pm==='none'?'available':data.pm==='available'?'unavailable':'none'; const ns = {...schedule, [ds]:{...data, pm:next}}; setSchedule(ns); saveToCloud(ns); }} disabled={!isEditMode} className="flex flex-1 min-h-0"><SlotDisplay status={data.pm} label="午後" /></button>
                             </>
                           )}
                         </div>
                         {isEditMode && !sun && !hol && (
-                          <button onClick={() => {
-                              const ns = {...schedule, [ds]:{...data, isClosed: !data.isClosed}};
-                              setSchedule(ns); saveToCloud(ns);
-                            }} className={`absolute bottom-0.5 right-0.5 sm:bottom-1.5 sm:right-1.5 p-1 rounded transition-all z-10 opacity-0 group-hover:opacity-100
-                            ${data.isClosed ? 'bg-red-500 text-white opacity-100 shadow-md' : 'bg-white text-slate-300 border border-slate-100 hover:text-red-500'}`}>
-                            <Store size={12} className="sm:size-4" />
-                          </button>
+                          <button onClick={() => { const ns = {...schedule, [ds]:{...data, isClosed: !data.isClosed}}; setSchedule(ns); saveToCloud(ns); }} className={`absolute bottom-0.5 right-0.5 sm:bottom-1.5 sm:right-1.5 p-1 rounded transition-all z-10 opacity-0 group-hover:opacity-100 ${data.isClosed ? 'bg-red-500 text-white opacity-100 shadow-md' : 'bg-white text-slate-300 border border-slate-100 hover:text-red-500'}`}><Store size={12} className="sm:size-4" /></button>
                         )}
                       </div>
                     );
@@ -372,7 +340,7 @@ export default function App() {
             );
           })}
         </main>
-        <footer className="mt-12 mb-16 text-center border-t border-slate-100 pt-8 w-full">
+        <footer className="mt-12 mb-16 text-center border-t border-slate-100 pt-8 w-full flex flex-col items-center">
           <div className="inline-flex flex-col items-center gap-3 text-slate-300">
             <div className="flex flex-col items-center gap-1">
               <span className="text-[9.5px] font-black tracking-widest uppercase italic text-slate-400 underline decoration-slate-200">Stable Build v{APP_VERSION}</span>
