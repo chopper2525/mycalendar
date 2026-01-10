@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Calendar, Trash2, CheckCircle2, XCircle, Lock, Unlock, Loader2, KeyRound, X, AlertTriangle, ChevronDown, Store, Tag, Smartphone } from 'lucide-react';
+import { Calendar, Trash2, CheckCircle2, XCircle, Lock, Unlock, Loader2, KeyRound, X, AlertTriangle, ChevronDown, Store, Tag, Smartphone, ExternalLink, Home } from 'lucide-react';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'firebase/auth';
 
 /**
  * アプリケーション設定 & バージョン情報
- * v3.5.1: 日曜スリム化 + 月〜土の完全均等レイアウト
+ * v3.6.0: 7列均等レイアウトへの回帰 + 公式HPリンク追加
  */
-const APP_VERSION = "v3.5.1";
+const APP_VERSION = "v3.6.0";
 const UPDATE_DATE = "2026.01.10";
 
 // Firebaseの設定
@@ -213,11 +213,6 @@ export default function App() {
           background-image: linear-gradient(45deg, #fee2e2 25%, transparent 25%, transparent 50%, #fee2e2 50%, #fee2e2 75%, transparent 75%, transparent);
           background-size: 10px 10px;
         }
-        /* 日曜のみ 0.7、月〜土は 1.0 ずつ均等に割り当て */
-        .grid-custom-cols {
-          display: grid;
-          grid-template-columns: 0.7fr 1fr 1fr 1fr 1fr 1fr 1fr;
-        }
       `}</style>
 
       {showPassModal && (
@@ -246,7 +241,21 @@ export default function App() {
                 </div>
               </div>
             </div>
+
+            {/* ホームページへ戻るリンクを追加 */}
+            <div className="flex-1 px-4 hidden sm:flex justify-center">
+              <a href="https://www.whale39.net/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-black text-slate-400 hover:text-indigo-600 transition-colors bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
+                <Home size={14} />
+                <span>ホームページへ戻る</span>
+                <ExternalLink size={10} className="opacity-50" />
+              </a>
+            </div>
+
             <div className="flex items-center gap-3 shrink-0">
+              {/* スマホ用ミニリンク */}
+              <a href="https://www.whale39.net/" target="_blank" rel="noopener noreferrer" className="sm:hidden text-slate-400 hover:text-indigo-600 transition-colors p-2">
+                <Home size={18} />
+              </a>
               {saving && <span className="text-[8px] text-indigo-500 font-black animate-pulse uppercase">SAVING</span>}
               <button onClick={() => isEditMode ? setIsEditMode(false) : setShowPassModal(true)} className={`px-3 py-1 rounded-lg font-black text-[9px] sm:text-xs shadow-sm transition-all active:scale-95 ${isEditMode ? 'bg-slate-800 text-white' : 'bg-indigo-600 text-white'}`}>
                 {isEditMode ? '編集終了' : '編集モード'}
@@ -275,15 +284,15 @@ export default function App() {
                     </span>
                   </div>
                   
-                  {/* ヘッダー: 日曜は狭く、月曜〜土曜は 1fr で完全に均等 */}
-                  <div className="grid-custom-cols text-center text-[10px] sm:text-xs font-black uppercase py-3 border-b bg-slate-50/50 tracking-[0.1em] sm:tracking-[0.2em]">
+                  {/* ヘッダー: 日〜土まで均等な grid-cols-7 を使用 */}
+                  <div className="grid grid-cols-7 text-center text-[10px] sm:text-xs font-black uppercase py-3 border-b bg-slate-50/50 tracking-[0.1em] sm:tracking-[0.2em]">
                     {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((name, i) => (
                       <div key={`${name}-${mi}`} className={i===0?'text-red-500':i===6?'text-blue-500':'text-slate-400'}>{String(name)}</div>
                     ))}
                   </div>
                   
-                  {/* ボディ: ヘッダーと同期したグリッド */}
-                  <div className="grid-custom-cols">
+                  {/* ボディ: ヘッダーと同期した grid-cols-7 */}
+                  <div className="grid grid-cols-7">
                     {days.map((day, i) => {
                       if (!day) return <div key={`empty-${mi}-${i}`} className="h-[86px] sm:h-[150px] border-b border-r border-slate-50 bg-slate-50/10" />;
                       const ds = toLocalDateString(day);
