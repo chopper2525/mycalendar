@@ -6,9 +6,9 @@ import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken }
 
 /**
  * アプリケーション設定 & バージョン情報
- * v3.7.1: 和暦表示を正式名称（令和・平成・昭和）に変更し「年」を追加
+ * v3.7.3: スマホ表示時の文字サイズ微調整（日付・祝日・休み以外を1pt縮小）
  */
-const APP_VERSION = "3.7.1";
+const APP_VERSION = "3.7.3";
 const UPDATE_DATE = "2026.01.10";
 
 // Firebaseの設定
@@ -171,7 +171,8 @@ export default function App() {
       <div className={`${base} bg-emerald-500 border-emerald-600 text-white`}>
         <div className="flex items-center justify-center gap-1 w-full text-center">
           <CheckCircle2 size={12} className="shrink-0 sm:w-[14px] sm:h-[14px]" strokeWidth={3} />
-          <span className="text-[10px] sm:text-xs font-black truncate">{label} 〇</span>
+          {/* 修正: スマホ表示時の文字サイズを 9px に縮小 */}
+          <span className="text-[9px] sm:text-xs font-black truncate">{label} 〇</span>
         </div>
       </div>
     );
@@ -179,13 +180,15 @@ export default function App() {
       <div className={`${base} bg-rose-100 border-rose-300 text-rose-600`}>
         <div className="flex items-center justify-center gap-1 w-full text-center">
           <XCircle size={12} className="shrink-0 sm:w-[14px] sm:h-[14px]" strokeWidth={3} />
-          <span className="text-[10px] sm:text-xs font-black truncate">{label} ✕</span>
+          {/* 修正: スマホ表示時の文字サイズを 9px に縮小 */}
+          <span className="text-[9px] sm:text-xs font-black truncate">{label} ✕</span>
         </div>
       </div>
     );
     return (
       <div className={`${base} bg-white border-slate-200 border-dashed text-slate-400 opacity-40`}>
-        <span className="text-[10px] sm:text-xs font-black">{label} -</span>
+        {/* 修正: スマホ表示時の文字サイズを 9px に縮小 */}
+        <span className="text-[9px] sm:text-xs font-black">{label} -</span>
       </div>
     );
   };
@@ -210,7 +213,7 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex justify-center">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 w-full flex flex-col items-center overflow-x-hidden">
       <style>{`
         .bg-stripes {
           background-image: linear-gradient(45deg, #fee2e2 25%, transparent 25%, transparent 50%, #fee2e2 50%, #fee2e2 75%, transparent 75%, transparent);
@@ -231,171 +234,177 @@ export default function App() {
         </div>
       )}
 
-      <div className="flex flex-col items-center w-full min-h-screen p-2 md:p-8 lg:p-12">
-        <div className="w-full max-w-3xl mx-auto">
-          <header className="mb-4 flex flex-row justify-between items-center bg-white py-2 px-4 sm:px-6 rounded-2xl shadow-sm border border-slate-100">
-            <div className="flex items-center gap-3 text-indigo-600 shrink-0">
-              <Calendar size={20} strokeWidth={2.5} />
-              <div className="flex flex-col">
-                <h1 className="text-sm sm:text-xl font-thin tracking-tighter italic uppercase leading-none">Whale Calendar</h1>
-                <div className="flex items-center gap-1 mt-1 opacity-40">
-                  <Tag size={8} />
-                  <span className="text-[8px] font-black tracking-widest uppercase">{APP_VERSION}</span>
-                </div>
+      <div className="w-full max-w-3xl mx-auto p-2 sm:p-6 md:p-8 lg:p-12 flex flex-col items-center">
+        
+        <header className="mb-4 w-full flex flex-row justify-between items-center bg-white py-2 px-4 sm:px-6 rounded-2xl shadow-sm border border-slate-100">
+          <div className="flex items-center gap-3 text-indigo-600 shrink-0">
+            <Calendar size={20} strokeWidth={2.5} />
+            <div className="flex flex-col">
+              <h1 className="text-sm sm:text-xl font-thin tracking-tighter italic uppercase leading-none">Whale Calendar</h1>
+              <div className="flex items-center gap-1 mt-1 opacity-40">
+                <Tag size={8} />
+                <span className="text-[8px] font-black tracking-widest uppercase">{APP_VERSION}</span>
               </div>
             </div>
+          </div>
 
-            <div className="flex-1 px-4 hidden sm:flex justify-center">
-              <a href="https://www.whale39.net/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-black text-slate-400 hover:text-indigo-600 transition-colors bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
-                <Home size={14} />
-                <span>公式サイトへ戻る</span>
-                <ExternalLink size={10} className="opacity-50" />
-              </a>
-            </div>
+          <div className="flex-1 px-4 hidden sm:flex justify-center">
+            <a href="https://www.whale39.net/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-black text-slate-400 hover:text-indigo-600 transition-colors bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
+              <Home size={14} />
+              <span>公式サイトへ戻る</span>
+              <ExternalLink size={10} className="opacity-50" />
+            </a>
+          </div>
 
-            <div className="flex items-center gap-3 shrink-0">
-              <a href="https://www.whale39.net/" target="_blank" rel="noopener noreferrer" className="sm:hidden text-slate-400 hover:text-indigo-600 transition-colors p-2">
-                <Home size={18} />
-              </a>
-              {saving && <span className="text-[8px] text-indigo-500 font-black animate-pulse uppercase">SAVING</span>}
-              <button onClick={() => isEditMode ? setIsEditMode(false) : setShowPassModal(true)} className={`px-3 py-1 rounded-lg font-black text-[9px] sm:text-xs shadow-sm transition-all active:scale-95 ${isEditMode ? 'bg-slate-800 text-white' : 'bg-indigo-600 text-white'}`}>
-                {isEditMode ? '編集終了' : '編集モード'}
-              </button>
-            </div>
-          </header>
+          <div className="flex items-center gap-3 shrink-0">
+            <a href="https://www.whale39.net/" target="_blank" rel="noopener noreferrer" className="sm:hidden text-slate-400 hover:text-indigo-600 transition-colors p-2">
+              <Home size={18} />
+            </a>
+            {saving && <span className="text-[8px] text-indigo-500 font-black animate-pulse uppercase">SAVING</span>}
+            <button onClick={() => isEditMode ? setIsEditMode(false) : setShowPassModal(true)} className={`px-3 py-1 rounded-lg font-black text-[9px] sm:text-xs shadow-sm transition-all active:scale-95 ${isEditMode ? 'bg-slate-800 text-white' : 'bg-indigo-600 text-white'}`}>
+              {isEditMode ? '編集終了' : '編集モード'}
+            </button>
+          </div>
+        </header>
 
-          <main className="grid grid-cols-1 gap-12">
-            {months.map(({year, month}, mi) => {
-              const first = new Date(year, month, 1);
-              const days = [];
-              for (let i = 0; i < first.getDay(); i++) days.push(null);
-              const d = new Date(first);
-              while (d.getMonth() === month) { 
-                days.push(new Date(d)); 
-                d.setDate(d.getDate() + 1); 
-              }
-              const rY = year - 2018; const hY = year - 1988; const sY = year - 1925;
+        <main className="grid grid-cols-1 gap-12 w-full">
+          {months.map(({year, month}, mi) => {
+            const first = new Date(year, month, 1);
+            const days = [];
+            for (let i = 0; i < first.getDay(); i++) days.push(null);
+            const d = new Date(first);
+            while (d.getMonth() === month) { 
+              days.push(new Date(d)); 
+              d.setDate(d.getDate() + 1); 
+            }
+            const rY = year - 2018; const hY = year - 1988; const sY = year - 1925;
 
-              return (
-                <div key={`${year}-${month}-${mi}`} className="bg-white rounded-[40px] shadow-sm border border-slate-200 overflow-hidden">
-                  <div className="bg-slate-50 px-6 sm:px-10 py-5 border-b font-black text-slate-800 flex flex-wrap items-center justify-between gap-4">
-                    <div className="flex flex-wrap items-baseline gap-2 sm:gap-4">
-                      <span className="text-xl sm:text-2xl">{String(year)}年 { String(month + 1) }月</span>
-                      {/* 和暦表示を正式名称に変更し「年」を追加 */}
-                      <span className="text-[10px] sm:text-sm text-slate-400 font-bold tracking-tight uppercase">
-                        (令和{rY}年 / 平成{hY}年 / 昭和{sY}年)
-                      </span>
+            return (
+              <div key={`${year}-${month}-${mi}`} className="bg-white rounded-[40px] shadow-sm border border-slate-200 overflow-hidden w-full mx-auto">
+                <div className="bg-slate-50 px-6 sm:px-10 py-5 border-b font-black text-slate-800 flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex flex-wrap items-baseline gap-2 sm:gap-4">
+                    <span className="text-xl sm:text-2xl">{String(year)}年 { String(month + 1) }月</span>
+                    {/* 修正: スマホ表示時の和暦文字サイズを 9px に縮小 */}
+                    <span className="text-[9px] sm:text-sm text-slate-400 font-bold tracking-tight uppercase">
+                      (令和{rY}年 / 平成{hY}年 / 昭和{sY}年)
+                    </span>
+                  </div>
+                  
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 ml-auto">
+                    {/* 凡例テキスト: 9px (sm: 12px) */}
+                    <div className="flex items-center gap-1 text-[9px] sm:text-xs font-bold whitespace-nowrap">
+                      <span className="text-emerald-600 text-sm sm:text-base">〇</span>
+                      <span className="text-slate-400 font-black">＝空きあり</span>
                     </div>
+                    <div className="flex items-center gap-1 text-[9px] sm:text-xs font-bold whitespace-nowrap">
+                      <span className="text-rose-500 text-sm sm:text-base">✕</span>
+                      <span className="text-slate-400 font-black">＝空きなし</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-[9px] sm:text-xs font-bold whitespace-nowrap">
+                      <span className="text-sm sm:text-base">📱</span>
+                      <span className="text-slate-400 font-black">＝スマホクラス</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-7 text-center text-[9px] sm:text-xs font-black uppercase py-3 border-b bg-slate-50/50 tracking-[0.1em] sm:tracking-[0.2em]">
+                  {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((name, i) => (
+                    <div key={`${name}-${mi}`} className={i===0?'text-red-500':i===6?'text-blue-500':'text-slate-500'}>{String(name)}</div>
+                  ))}
+                </div>
+                
+                <div className="grid grid-cols-7">
+                  {days.map((day, i) => {
+                    if (!day) return <div key={`empty-${mi}-${i}`} className="h-[76px] sm:h-[130px] border-b border-r border-slate-50 bg-slate-50/10" />;
+                    const ds = toLocalDateString(day);
+                    const hol = holidays[ds];
+                    const sun = day.getDay() === 0;
+                    const wed = day.getDay() === 3;
+                    const data = schedule[ds] || { am: 'none', pm: 'none', isClosed: false };
                     
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 ml-auto">
-                      <div className="flex items-center gap-1 text-[10px] sm:text-xs font-bold whitespace-nowrap">
-                        <span className="text-emerald-600 text-sm sm:text-base">〇</span>
-                        <span className="text-slate-400">＝空きあり</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-[10px] sm:text-xs font-bold whitespace-nowrap">
-                        <span className="text-rose-500 text-sm sm:text-base">✕</span>
-                        <span className="text-slate-400">＝空きなし</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-[10px] sm:text-xs font-bold whitespace-nowrap">
-                        <span className="text-sm sm:text-base">📱</span>
-                        <span className="text-slate-400">＝スマホクラス</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-7 text-center text-[10px] sm:text-xs font-black uppercase py-3 border-b bg-slate-50/50 tracking-[0.1em] sm:tracking-[0.2em]">
-                    {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((name, i) => (
-                      <div key={`${name}-${mi}`} className={i===0?'text-red-500':i===6?'text-blue-500':'text-slate-500'}>{String(name)}</div>
-                    ))}
-                  </div>
-                  
-                  <div className="grid grid-cols-7">
-                    {days.map((day, i) => {
-                      if (!day) return <div key={`empty-${mi}-${i}`} className="h-[76px] sm:h-[130px] border-b border-r border-slate-50 bg-slate-50/10" />;
-                      const ds = toLocalDateString(day);
-                      const hol = holidays[ds];
-                      const sun = day.getDay() === 0;
-                      const wed = day.getDay() === 3;
-                      const data = schedule[ds] || { am: 'none', pm: 'none', isClosed: false };
-                      
-                      const isClosed = data.isClosed || sun || !!hol;
-                      const isSmartphoneClass = wed && !hol;
-                      const isToday = ds === todayStr;
+                    const isClosed = data.isClosed || sun || !!hol;
+                    const isSmartphoneClass = wed && !hol;
+                    const isToday = ds === todayStr;
 
-                      return (
-                        <div key={ds} className={`h-[76px] sm:h-[130px] border-b border-r border-slate-50 p-1 sm:p-2 flex flex-col relative transition-colors group
-                          ${isClosed ? 'bg-red-50 bg-stripes' : isToday ? 'bg-yellow-50' : sun ? 'bg-red-50/10' : ''}`}>
-                          <div className="flex flex-col mb-1 overflow-hidden px-1">
-                            <span className={`text-sm sm:text-base font-black leading-none ${sun || hol ? 'text-red-600' : 'text-slate-600'}`}>
-                              {day.getDate()}
-                              {isToday && <span className="ml-1 text-[8px] sm:text-[10px] text-yellow-600 uppercase tracking-tighter font-black">Today</span>}
-                            </span>
-                            {hol && (
-                              <span className="text-[7px] sm:text-[9px] text-red-500 font-black leading-tight truncate bg-red-100/50 px-1 rounded mt-1">{String(hol)}</span>
-                            )}
-                          </div>
-                          
-                          <div className="flex-1 flex flex-col gap-0 justify-center py-0.5 sm:py-1 px-1">
-                            {isClosed ? (
-                              <div className="flex justify-center items-center w-full animate-in zoom-in duration-300">
-                                <HolidayIcon active={true} />
-                              </div>
-                            ) : isSmartphoneClass ? (
-                              <div className="flex flex-col items-center justify-center w-full h-full animate-in fade-in duration-500">
-                                <div className="bg-sky-500 text-white px-1 sm:px-2 py-1 sm:py-1.5 rounded-full flex items-center justify-center gap-1 shadow-sm border border-sky-600 overflow-hidden min-w-[24px]">
-                                  <Smartphone size={11} strokeWidth={2.5} className="shrink-0 hidden sm:block" />
-                                  <span className="text-[9px] sm:text-[10px] font-black tracking-tighter whitespace-nowrap">
-                                    <span className="sm:hidden text-base">📱</span>
-                                    <span className="hidden sm:inline">スマホクラス</span>
-                                  </span>
-                                </div>
-                              </div>
-                            ) : (
-                              <>
-                                <button onClick={() => {
-                                  if(!isEditMode) return;
-                                  const next = data.am==='none'?'available':data.am==='available'?'unavailable':'none';
-                                  const ns = {...schedule, [ds]:{...data, am:next}};
-                                  setSchedule(ns); saveToCloud(ns);
-                                }} disabled={!isEditMode} className="flex flex-1 min-h-0"><SlotDisplay status={data.am} label="午前" /></button>
-                                <button onClick={() => {
-                                  if(!isEditMode) return;
-                                  const next = data.pm==='none'?'available':data.pm==='available'?'unavailable':'none';
-                                  const ns = {...schedule, [ds]:{...data, pm:next}};
-                                  setSchedule(ns); saveToCloud(ns);
-                                }} disabled={!isEditMode} className="flex flex-1 min-h-0"><SlotDisplay status={data.pm} label="午後" /></button>
-                              </>
-                            )}
-                          </div>
-                          
-                          {isEditMode && !sun && !hol && (
-                            <button 
-                              onClick={() => {
-                                const ns = {...schedule, [ds]:{...data, isClosed: !data.isClosed}};
-                                setSchedule(ns); saveToCloud(ns);
-                              }} className={`absolute bottom-0.5 right-0.5 sm:bottom-1.5 sm:right-1.5 p-1 rounded transition-all z-10 opacity-0 group-hover:opacity-100
-                              ${data.isClosed ? 'bg-red-500 text-white opacity-100 shadow-md' : 'bg-white text-slate-300 border border-slate-100 hover:text-red-500'}`}>
-                              <Store size={12} className="sm:size-4" />
-                            </button>
+                    return (
+                      <div key={ds} className={`h-[76px] sm:h-[130px] border-b border-r border-slate-50 p-1 sm:p-2 flex flex-col relative transition-colors group
+                        ${isClosed ? 'bg-red-50 bg-stripes' : isToday ? 'bg-yellow-50' : sun ? 'bg-red-50/10' : ''}`}>
+                        <div className="flex flex-col mb-1 overflow-hidden px-1">
+                          {/* 日付: サイズ維持(sm:base) */}
+                          <span className={`text-sm sm:text-base font-black leading-none ${sun || hol ? 'text-red-600' : 'text-slate-600'}`}>
+                            {day.getDate()}
+                            {/* Todayラベル: 7px に縮小 */}
+                            {isToday && <span className="ml-1 text-[7px] sm:text-[10px] text-yellow-600 uppercase tracking-tighter font-black">Today</span>}
+                          </span>
+                          {/* 祝日名: サイズ維持(7px) */}
+                          {hol && (
+                            <span className="text-[7px] sm:text-[9px] text-red-500 font-black leading-tight truncate bg-red-100/50 px-1 rounded mt-1">{String(hol)}</span>
                           )}
                         </div>
-                      );
-                    })}
-                  </div>
+                        
+                        <div className="flex-1 flex flex-col gap-0 justify-center py-0.5 sm:py-1 px-1">
+                          {isClosed ? (
+                            <div className="flex justify-center items-center w-full animate-in zoom-in duration-300">
+                              {/* 休みアイコン: サイズ維持 */}
+                              <HolidayIcon active={true} />
+                            </div>
+                          ) : isSmartphoneClass ? (
+                            <div className="flex flex-col items-center justify-center w-full h-full animate-in fade-in duration-500">
+                              <div className="bg-sky-500 text-white px-1 sm:px-2 py-1 sm:py-1.5 rounded-full flex items-center justify-center gap-1 shadow-sm border border-sky-600 overflow-hidden min-w-[24px]">
+                                <Smartphone size={11} strokeWidth={2.5} className="shrink-0 hidden sm:block" />
+                                {/* スマホクラス文字: 8px に縮小 */}
+                                <span className="text-[8px] sm:text-[10px] font-black tracking-tighter whitespace-nowrap">
+                                  <span className="sm:hidden text-base">📱</span>
+                                  <span className="hidden sm:inline">スマホクラス</span>
+                                </span>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <button onClick={() => {
+                                if(!isEditMode) return;
+                                const next = data.am==='none'?'available':data.am==='available'?'unavailable':'none';
+                                const ns = {...schedule, [ds]:{...data, am:next}};
+                                setSchedule(ns); saveToCloud(ns);
+                              }} disabled={!isEditMode} className="flex flex-1 min-h-0"><SlotDisplay status={data.am} label="午前" /></button>
+                              <button onClick={() => {
+                                if(!isEditMode) return;
+                                const next = data.pm==='none'?'available':data.pm==='available'?'unavailable':'none';
+                                const ns = {...schedule, [ds]:{...data, pm:next}};
+                                setSchedule(ns); saveToCloud(ns);
+                              }} disabled={!isEditMode} className="flex flex-1 min-h-0"><SlotDisplay status={data.pm} label="午後" /></button>
+                            </>
+                          )}
+                        </div>
+                        
+                        {isEditMode && !sun && !hol && (
+                          <button 
+                            onClick={() => {
+                              const ns = {...schedule, [ds]:{...data, isClosed: !data.isClosed}};
+                              setSchedule(ns); saveToCloud(ns);
+                            }} className={`absolute bottom-0.5 right-0.5 sm:bottom-1.5 sm:right-1.5 p-1 rounded transition-all z-10 opacity-0 group-hover:opacity-100
+                            ${data.isClosed ? 'bg-red-500 text-white opacity-100 shadow-md' : 'bg-white text-slate-300 border border-slate-100 hover:text-red-500'}`}>
+                            <Store size={12} className="sm:size-4" />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
-          </main>
-          
-          <footer className="mt-12 mb-16 text-center border-t border-slate-100 pt-8">
-            <div className="inline-flex flex-col items-center gap-3 text-slate-300">
-              <div className="flex flex-col items-center gap-1">
-                <span className="text-[10px] font-black tracking-widest uppercase italic text-slate-400 underline decoration-slate-200">Stable Build v{APP_VERSION}</span>
-                <span className="text-[8px] font-bold text-slate-300 uppercase">Released: {UPDATE_DATE}</span>
               </div>
+            );
+          })}
+        </main>
+        
+        <footer className="mt-12 mb-16 text-center border-t border-slate-100 pt-8 w-full">
+          <div className="inline-flex flex-col items-center gap-3 text-slate-300">
+            <div className="flex flex-col items-center gap-1">
+              {/* フッター情報: 9px / 7px に縮小 */}
+              <span className="text-[9px] font-black tracking-widest uppercase italic text-slate-400 underline decoration-slate-200">Stable Build v{APP_VERSION}</span>
+              <span className="text-[7px] font-bold text-slate-300 uppercase">Released: {UPDATE_DATE}</span>
             </div>
-          </footer>
-        </div>
+          </div>
+        </footer>
       </div>
     </div>
   );
