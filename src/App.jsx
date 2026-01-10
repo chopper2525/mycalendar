@@ -6,9 +6,9 @@ import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken }
 
 /**
  * アプリケーション設定 & バージョン情報
- * v3.7.6: WEB公開時の中央配置を最優先で強制するレイアウト修正
+ * v3.7.7: スマホ表示時のボタン内テキストを 8px に縮小
  */
-const APP_VERSION = "3.7.6";
+const APP_VERSION = "3.7.7";
 const UPDATE_DATE = "2026.01.10";
 
 // Firebaseの設定
@@ -139,7 +139,8 @@ export default function App() {
       <div className={`${base} bg-emerald-500 border-emerald-600 text-white`}>
         <div className="flex items-center justify-center gap-1 w-full text-center">
           <CheckCircle2 size={12} className="shrink-0 sm:w-[14px] sm:h-[14px]" strokeWidth={3} />
-          <span className="text-[9.5px] sm:text-xs font-black truncate">{label} 〇</span>
+          {/* 修正: 午前/午後ラベルをスマホ表示時 8px に設定 */}
+          <span className="text-[8px] sm:text-xs font-black truncate">{label} 〇</span>
         </div>
       </div>
     );
@@ -147,13 +148,15 @@ export default function App() {
       <div className={`${base} bg-rose-100 border-rose-300 text-rose-600`}>
         <div className="flex items-center justify-center gap-1 w-full text-center">
           <XCircle size={12} className="shrink-0 sm:w-[14px] sm:h-[14px]" strokeWidth={3} />
-          <span className="text-[9.5px] sm:text-xs font-black truncate">{label} ✕</span>
+          {/* 修正: 午前/午後ラベルをスマホ表示時 8px に設定 */}
+          <span className="text-[8px] sm:text-xs font-black truncate">{label} ✕</span>
         </div>
       </div>
     );
     return (
       <div className={`${base} bg-white border-slate-200 border-dashed text-slate-400 opacity-40`}>
-        <span className="text-[9.5px] sm:text-xs font-black">{label} -</span>
+        {/* 修正: 未設定ラベルをスマホ表示時 8px に設定 */}
+        <span className="text-[8px] sm:text-xs font-black">{label} -</span>
       </div>
     );
   };
@@ -178,13 +181,8 @@ export default function App() {
   );
 
   return (
-    /* 【重要】中央寄せを強制するためのスタイル追加 
-      html, body, #root などの親要素がどのような設定でも、
-      この App コンポーネントが画面中央に位置するように強制します。
-    */
     <div className="whale-calendar-app-root min-h-screen bg-slate-50 font-sans text-slate-900 w-full flex flex-col items-center overflow-x-hidden">
       <style>{`
-        /* ブラウザの基本レイアウトを中央寄せにリセット */
         html, body, #root {
           margin: 0 !important;
           padding: 0 !important;
@@ -213,9 +211,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 最大幅 3xl (約768px) で、中身が常に中央にくるように mx-auto を適用 */}
       <div className="w-full max-w-3xl mx-auto p-2 sm:p-6 md:p-8 lg:p-12 flex flex-col items-center">
-        
         <header className="mb-4 w-full flex flex-row justify-between items-center bg-white py-2 px-4 sm:px-6 rounded-2xl shadow-sm border border-slate-100">
           <div className="flex items-center gap-3 text-indigo-600 shrink-0">
             <Calendar size={20} strokeWidth={2.5} />
@@ -227,7 +223,6 @@ export default function App() {
               </div>
             </div>
           </div>
-
           <div className="flex-1 px-4 hidden sm:flex justify-center">
             <a href="https://www.whale39.net/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-black text-slate-400 hover:text-indigo-600 transition-colors bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
               <Home size={14} />
@@ -235,7 +230,6 @@ export default function App() {
               <ExternalLink size={10} className="opacity-50" />
             </a>
           </div>
-
           <div className="flex items-center gap-3 shrink-0">
             <a href="https://www.whale39.net/" target="_blank" rel="noopener noreferrer" className="sm:hidden text-slate-400 hover:text-indigo-600 transition-colors p-2">
               <Home size={18} />
