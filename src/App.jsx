@@ -6,9 +6,9 @@ import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken }
 
 /**
  * アプリケーション設定 & バージョン情報
- * v3.6.7: 横幅のさらなるスリム化 (max-w-3xl)
+ * v3.7.1: 和暦表示を正式名称（令和・平成・昭和）に変更し「年」を追加
  */
-const APP_VERSION = "3.6.7";
+const APP_VERSION = "3.7.1";
 const UPDATE_DATE = "2026.01.10";
 
 // Firebaseの設定
@@ -22,7 +22,7 @@ const firebaseConfig = {
   measurementId: "G-M2FHT3HR5Q"
 };
 
-// IDを固定して安定動作を優先
+// IDを固定
 const appId = "my-calendar-id";
 
 // 初期化
@@ -191,7 +191,7 @@ export default function App() {
   };
 
   if (errorMsg) return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 p-6 text-slate-900">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6 text-slate-900">
       <div className="bg-white p-10 rounded-3xl shadow-xl border-t-8 border-rose-500 max-w-md w-full text-center">
         <h2 className="text-rose-600 font-black text-2xl mb-4 flex items-center justify-center gap-2"><AlertTriangle size={32} /> エラー</h2>
         <p className="text-base text-slate-700 font-bold mb-8">{String(errorMsg)}</p>
@@ -201,7 +201,7 @@ export default function App() {
   );
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <div className="flex flex-col items-center gap-4 text-indigo-600">
         <Loader2 className="animate-spin" size={48} strokeWidth={3} />
         <span className="font-black text-slate-400 tracking-widest uppercase text-xs">Initializing v{APP_VERSION}...</span>
@@ -210,7 +210,7 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex justify-center">
       <style>{`
         .bg-stripes {
           background-image: linear-gradient(45deg, #fee2e2 25%, transparent 25%, transparent 50%, #fee2e2 50%, #fee2e2 75%, transparent 75%, transparent);
@@ -232,8 +232,7 @@ export default function App() {
       )}
 
       <div className="flex flex-col items-center w-full min-h-screen p-2 md:p-8 lg:p-12">
-        {/* 横幅を max-w-3xl に変更してスリム化 */}
-        <div className="w-full max-w-3xl">
+        <div className="w-full max-w-3xl mx-auto">
           <header className="mb-4 flex flex-row justify-between items-center bg-white py-2 px-4 sm:px-6 rounded-2xl shadow-sm border border-slate-100">
             <div className="flex items-center gap-3 text-indigo-600 shrink-0">
               <Calendar size={20} strokeWidth={2.5} />
@@ -279,11 +278,29 @@ export default function App() {
 
               return (
                 <div key={`${year}-${month}-${mi}`} className="bg-white rounded-[40px] shadow-sm border border-slate-200 overflow-hidden">
-                  <div className="bg-slate-50 px-6 sm:px-10 py-5 border-b font-black text-slate-800 flex flex-wrap items-baseline gap-2 sm:gap-4">
-                    <span className="text-xl sm:text-2xl">{String(year)}年 { String(month + 1) }月</span>
-                    <span className="text-[10px] sm:text-sm text-slate-400 font-bold tracking-tight uppercase">
-                      (R{rY} / H{hY} / S{sY})
-                    </span>
+                  <div className="bg-slate-50 px-6 sm:px-10 py-5 border-b font-black text-slate-800 flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex flex-wrap items-baseline gap-2 sm:gap-4">
+                      <span className="text-xl sm:text-2xl">{String(year)}年 { String(month + 1) }月</span>
+                      {/* 和暦表示を正式名称に変更し「年」を追加 */}
+                      <span className="text-[10px] sm:text-sm text-slate-400 font-bold tracking-tight uppercase">
+                        (令和{rY}年 / 平成{hY}年 / 昭和{sY}年)
+                      </span>
+                    </div>
+                    
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 ml-auto">
+                      <div className="flex items-center gap-1 text-[10px] sm:text-xs font-bold whitespace-nowrap">
+                        <span className="text-emerald-600 text-sm sm:text-base">〇</span>
+                        <span className="text-slate-400">＝空きあり</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-[10px] sm:text-xs font-bold whitespace-nowrap">
+                        <span className="text-rose-500 text-sm sm:text-base">✕</span>
+                        <span className="text-slate-400">＝空きなし</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-[10px] sm:text-xs font-bold whitespace-nowrap">
+                        <span className="text-sm sm:text-base">📱</span>
+                        <span className="text-slate-400">＝スマホクラス</span>
+                      </div>
+                    </div>
                   </div>
                   
                   <div className="grid grid-cols-7 text-center text-[10px] sm:text-xs font-black uppercase py-3 border-b bg-slate-50/50 tracking-[0.1em] sm:tracking-[0.2em]">
@@ -325,9 +342,12 @@ export default function App() {
                               </div>
                             ) : isSmartphoneClass ? (
                               <div className="flex flex-col items-center justify-center w-full h-full animate-in fade-in duration-500">
-                                <div className="bg-sky-500 text-white px-2 py-1 sm:py-1.5 rounded-full flex items-center gap-1 shadow-sm border border-sky-600 overflow-hidden">
-                                  <Smartphone size={11} strokeWidth={2.5} className="shrink-0" />
-                                  <span className="text-[9px] sm:text-[10px] font-black tracking-tighter whitespace-nowrap">スマホクラス</span>
+                                <div className="bg-sky-500 text-white px-1 sm:px-2 py-1 sm:py-1.5 rounded-full flex items-center justify-center gap-1 shadow-sm border border-sky-600 overflow-hidden min-w-[24px]">
+                                  <Smartphone size={11} strokeWidth={2.5} className="shrink-0 hidden sm:block" />
+                                  <span className="text-[9px] sm:text-[10px] font-black tracking-tighter whitespace-nowrap">
+                                    <span className="sm:hidden text-base">📱</span>
+                                    <span className="hidden sm:inline">スマホクラス</span>
+                                  </span>
                                 </div>
                               </div>
                             ) : (
