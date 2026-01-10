@@ -84,15 +84,16 @@ const getJapaneseHolidays = (year) => {
 };
 
 /**
- * 定休日アイコン
+ * 改良版：定休日アイコン（レスポンシブ対応）
  */
 const HolidayIcon = ({ active, className }) => (
-  <div className={`relative flex flex-col items-center justify-center ${className}`}>
-    <div className={`w-full h-1.5 mb-1 rounded-full ${active ? 'bg-slate-500' : 'bg-slate-200'}`} />
-    <div className={`relative p-3 rounded-2xl border-2 transition-all duration-300 flex flex-col items-center gap-1
-      ${active ? 'bg-slate-100 border-slate-400 shadow-inner scale-110' : 'bg-white border-slate-100 opacity-30'}`}>
-      <Store size={28} className={active ? 'text-slate-600' : 'text-slate-300'} />
-      <span className={`text-xs font-black tracking-tighter leading-none
+  <div className={`relative flex flex-col items-center justify-center w-full px-0.5 ${className}`}>
+    <div className={`w-full h-1 sm:h-1.5 mb-1 rounded-full ${active ? 'bg-slate-500' : 'bg-slate-200'}`} />
+    <div className={`relative w-full p-1 sm:p-3 rounded-lg sm:rounded-2xl border-2 transition-all duration-300 flex flex-col items-center gap-0.5
+      ${active ? 'bg-slate-100 border-slate-400 shadow-inner scale-105 sm:scale-110' : 'bg-white border-slate-100 opacity-30'}`}>
+      <Store size={20} className={`${active ? 'text-slate-500' : 'text-slate-300'} sm:hidden`} />
+      <Store size={28} className={`${active ? 'text-slate-600' : 'text-slate-300'} hidden sm:block`} />
+      <span className={`text-[8px] sm:text-xs font-black tracking-tighter leading-none whitespace-nowrap
         ${active ? 'text-slate-700' : 'text-slate-300'}`}>定休日</span>
     </div>
   </div>
@@ -167,21 +168,33 @@ export default function App() {
     finally { setSaving(false); }
   };
 
+  /**
+   * 改良版：スロット表示（スマホでのはみ出し対策）
+   */
   const SlotDisplay = ({ status, label }) => {
-    const base = "flex-1 rounded-xl border-2 flex items-center justify-center transition-all m-0.5 shadow-sm min-h-[44px]";
+    const base = "flex-1 rounded-xl border-2 flex items-center justify-center transition-all m-0.5 shadow-sm min-h-[44px] px-1";
+    
     if (status === SLOT_STATUS.AVAILABLE) return (
       <div className={`${base} bg-emerald-500 border-emerald-600 text-white`}>
-        <CheckCircle2 size={18} className="mr-1.5" strokeWidth={3} /><span className="text-xs font-black">{label} 空きあり</span>
+        <div className="flex items-center justify-center gap-0.5 sm:gap-1.5 w-full">
+          <CheckCircle2 size={14} className="sm:w-[18px] sm:h-[18px]" strokeWidth={3} />
+          <span className="text-[10px] sm:text-xs font-black truncate">{label}<span className="hidden sm:inline"> 空きあり</span><span className="sm:hidden">◯</span></span>
+        </div>
       </div>
     );
+    
     if (status === SLOT_STATUS.UNAVAILABLE) return (
       <div className={`${base} bg-rose-100 border-rose-300 text-rose-600`}>
-        <XCircle size={18} className="mr-1.5" strokeWidth={3} /><span className="text-xs font-black">{label} 空きなし</span>
+        <div className="flex items-center justify-center gap-0.5 sm:gap-1.5 w-full">
+          <XCircle size={14} className="sm:w-[18px] sm:h-[18px]" strokeWidth={3} />
+          <span className="text-[10px] sm:text-xs font-black truncate">{label}<span className="hidden sm:inline"> 空きなし</span><span className="sm:hidden">×</span></span>
+        </div>
       </div>
     );
+    
     return (
       <div className={`${base} bg-white border-slate-200 border-dashed text-slate-400`}>
-        <span className="text-xs font-black opacity-40">{label} -</span>
+        <span className="text-[10px] sm:text-xs font-black opacity-40">{label}<span className="hidden sm:inline"> -</span></span>
       </div>
     );
   };
@@ -227,18 +240,15 @@ export default function App() {
         </div>
       )}
 
-      <div className="flex flex-col items-center w-full min-h-screen p-4 md:p-10 lg:p-16">
+      <div className="flex flex-col items-center w-full min-h-screen p-2 md:p-10 lg:p-16">
         <div className="w-full max-w-6xl">
-          {/* ヘッダー：高さを極力低く(py-2) マージンも縮小(mb-4) */}
           <header className="mb-4 flex flex-col md:flex-row justify-between items-center bg-white py-2 px-4 md:px-6 rounded-2xl shadow-sm border border-slate-100 gap-2">
             <div className="flex items-center gap-2 text-indigo-600">
               <Calendar size={18} strokeWidth={2.5} />
-              {/* タイトル：極細かつコンパクト */}
               <h1 className="text-lg font-thin tracking-tighter italic uppercase leading-none">Whale Calendar</h1>
             </div>
             <div className="flex items-center gap-3">
               {saving && <span className="text-[9px] text-indigo-500 font-black animate-pulse uppercase tracking-widest">Saving...</span>}
-              {/* 編集ボタン：極小サイズ */}
               <button onClick={() => isEditMode ? setIsEditMode(false) : setShowPassModal(true)} className={`px-3 py-1 rounded-lg font-black text-[10px] shadow-sm transition-all active:scale-95 ${isEditMode ? 'bg-slate-900 text-white' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}>
                 {isEditMode ? '編集終了' : '編集モード'}
               </button>
@@ -256,27 +266,26 @@ export default function App() {
                 d.setDate(d.getDate() + 1); 
               }
 
-              // 和暦計算
               const reiwaYear = year - 2018;
               const heiseiYear = year - 1988;
               const showaYear = year - 1925;
 
               return (
-                <div key={`${year}-${month}`} className="bg-white rounded-[48px] shadow-sm border border-slate-200 overflow-hidden">
-                  <div className="bg-slate-50 px-10 py-6 border-b font-black text-slate-800 flex items-baseline gap-4">
-                    <span className="text-3xl">{year}年 { month + 1 }月</span>
-                    <span className="text-sm text-slate-400 font-bold uppercase tracking-tight">
-                      (令和{reiwaYear}年 / 平成{heiseiYear}年 / 昭和{showaYear}年)
+                <div key={`${year}-${month}`} className="bg-white rounded-[40px] md:rounded-[48px] shadow-sm border border-slate-200 overflow-hidden">
+                  <div className="bg-slate-50 px-6 md:px-10 py-4 md:py-6 border-b font-black text-slate-800 flex items-baseline gap-2 md:gap-4">
+                    <span className="text-xl md:text-3xl">{year}年 { month + 1 }月</span>
+                    <span className="text-[10px] md:text-sm text-slate-400 font-bold uppercase tracking-tight">
+                      (令和{reiwaYear} / 平成{heiseiYear} / 昭和{showaYear})
                     </span>
                   </div>
-                  <div className="grid grid-cols-7 text-center text-sm font-black uppercase py-4 border-b bg-slate-50/50 tracking-[0.2em]">
+                  <div className="grid grid-cols-7 text-center text-[10px] md:text-sm font-black uppercase py-3 md:py-4 border-b bg-slate-50/50 tracking-wider md:tracking-[0.2em]">
                     {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((name, i) => (
                       <div key={name} className={i===0?'text-red-500':i===6?'text-blue-500':'text-slate-400'}>{name}</div>
                     ))}
                   </div>
                   <div className="grid grid-cols-7">
                     {days.map((day, i) => {
-                      if (!day) return <div key={i} className="h-40 sm:h-48 border-b border-r border-slate-100 bg-slate-50/10" />;
+                      if (!day) return <div key={i} className="h-32 sm:h-48 border-b border-r border-slate-100 bg-slate-50/10" />;
                       const ds = toLocalDateString(day);
                       const hol = holidays[ds];
                       const sun = day.getDay() === 0;
@@ -285,16 +294,16 @@ export default function App() {
                       const isClosed = data.isClosed || sun || !!hol;
 
                       return (
-                        <div key={ds} className={`h-40 sm:h-48 border-b border-r border-slate-100 p-3 flex flex-col relative transition-colors group
+                        <div key={ds} className={`h-32 sm:h-48 border-b border-r border-slate-100 p-1 md:p-3 flex flex-col relative transition-colors group
                           ${sun ? 'bg-red-50/10' : ''} ${isClosed ? 'bg-stripes' : ''}`}>
-                          <div className="flex flex-col mb-3">
-                            <span className={`text-lg font-black ${sun || hol ? 'text-red-600' : 'text-slate-600'}`}>{day.getDate()}</span>
-                            {hol && <span className="text-xs text-red-500 font-black leading-tight truncate mt-1 bg-red-50 px-1.5 py-0.5 rounded-md inline-block self-start">{hol}</span>}
+                          <div className="flex flex-col mb-1 md:mb-3">
+                            <span className={`text-base md:text-lg font-black ${sun || hol ? 'text-red-600' : 'text-slate-600'}`}>{day.getDate()}</span>
+                            {hol && <span className="text-[8px] md:text-xs text-red-500 font-black leading-tight truncate mt-0.5 bg-red-50 px-1 py-0.5 rounded-md inline-block self-start">{hol}</span>}
                           </div>
-                          <div className="flex-1 flex flex-col gap-2 justify-center py-1">
+                          <div className="flex-1 flex flex-col gap-1 md:gap-2 justify-center py-1">
                             {isClosed ? (
-                              <div className="flex justify-center">
-                                <HolidayIcon active={true} className="w-20 h-20 sm:w-24 sm:h-24" />
+                              <div className="flex justify-center items-center w-full">
+                                <HolidayIcon active={true} className="max-w-[48px] sm:max-w-[80px]" />
                               </div>
                             ) : (
                               <>
@@ -319,9 +328,10 @@ export default function App() {
                               onClick={() => {
                                 const ns = {...schedule, [ds]:{...data, isClosed: !data.isClosed}};
                                 setSchedule(ns); saveToCloud(ns);
-                              }} className={`absolute bottom-3 right-3 p-3 rounded-2xl transition-all z-10 shadow-lg
+                              }} className={`absolute bottom-1 right-1 md:bottom-3 md:right-3 p-1 md:p-3 rounded-xl transition-all z-10 shadow-lg
                               ${data.isClosed ? 'bg-slate-800 text-white scale-110' : 'bg-white text-slate-300 border-2 border-slate-100 opacity-0 group-hover:opacity-100 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300'}`}>
-                              <Store size={22} strokeWidth={2.5} />
+                              <Store size={14} className="md:hidden" />
+                              <Store size={22} className="hidden md:block" strokeWidth={2.5} />
                             </button>
                           )}
                         </div>
