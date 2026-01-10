@@ -6,9 +6,9 @@ import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken }
 
 /**
  * アプリケーション設定 & バージョン情報
- * v3.4.3: 水曜スマホクラスの表示を整理（AM ONLYを削除）
+ * v3.4.5: セルの縦幅を精密に10px短縮 (PC: 150px / Mobile: 86px)
  */
-const APP_VERSION = "v3.4.3";
+const APP_VERSION = "v3.4.5";
 const UPDATE_DATE = "2026.01.10";
 
 // Firebaseの設定
@@ -73,8 +73,8 @@ const getJapaneseHolidays = (year) => {
 const HolidayIcon = ({ active }) => (
   <div className={`flex items-center justify-center border rounded-full transition-all duration-300 
     ${active ? 'bg-white border-red-300 text-red-500 shadow-sm scale-110' : 'bg-white border-slate-100 opacity-20'}
-    w-8 h-8 sm:w-10 sm:h-10`}>
-    <span className="text-[10px] sm:text-sm font-black">休</span>
+    w-7 h-7 sm:w-8 sm:h-8`}>
+    <span className="text-[9px] sm:text-xs font-black">休</span>
   </div>
 );
 
@@ -163,11 +163,11 @@ export default function App() {
   };
 
   const SlotDisplay = ({ status, label }) => {
-    const base = "flex-1 rounded-xl border-2 flex items-center justify-center transition-all mx-0.5 my-0 shadow-sm min-h-[38px] sm:min-h-[44px] px-1";
+    const base = "flex-1 rounded-xl border-2 flex items-center justify-center transition-all mx-0.5 my-0 shadow-sm min-h-[34px] sm:min-h-[40px] px-1";
     if (status === SLOT_STATUS.AVAILABLE) return (
       <div className={`${base} bg-emerald-500 border-emerald-600 text-white`}>
         <div className="flex items-center justify-center gap-1 w-full">
-          <CheckCircle2 size={14} className="sm:w-[18px] sm:h-[18px]" strokeWidth={3} />
+          <CheckCircle2 size={13} className="sm:w-[16px] sm:h-[16px]" strokeWidth={3} />
           <span className="text-[10px] sm:text-xs font-black truncate">{label}<span className="hidden sm:inline"> 空きあり</span><span className="sm:hidden">◯</span></span>
         </div>
       </div>
@@ -175,7 +175,7 @@ export default function App() {
     if (status === SLOT_STATUS.UNAVAILABLE) return (
       <div className={`${base} bg-rose-100 border-rose-300 text-rose-600`}>
         <div className="flex items-center justify-center gap-1 w-full">
-          <XCircle size={14} className="sm:w-[18px] sm:h-[18px]" strokeWidth={3} />
+          <XCircle size={13} className="sm:w-[16px] sm:h-[16px]" strokeWidth={3} />
           <span className="text-[10px] sm:text-xs font-black truncate">{label}<span className="hidden sm:inline"> 空きなし</span><span className="sm:hidden">×</span></span>
         </div>
       </div>
@@ -211,7 +211,7 @@ export default function App() {
       <style>{`
         .bg-stripes {
           background-image: linear-gradient(45deg, #fee2e2 25%, transparent 25%, transparent 50%, #fee2e2 50%, #fee2e2 75%, transparent 75%, transparent);
-          background-size: 12px 12px;
+          background-size: 10px 10px;
         }
       `}</style>
 
@@ -229,7 +229,7 @@ export default function App() {
       )}
 
       <div className="flex flex-col items-center w-full min-h-screen p-2 md:p-8 lg:p-12">
-        <div className="w-full max-w-6xl">
+        <div className="w-full max-w-4xl">
           <header className="mb-4 flex flex-row justify-between items-center bg-white py-2 px-4 sm:px-6 rounded-2xl shadow-sm border border-slate-100">
             <div className="flex items-center gap-3 text-indigo-600 shrink-0">
               <Calendar size={20} strokeWidth={2.5} />
@@ -264,9 +264,9 @@ export default function App() {
               return (
                 <div key={`${year}-${month}-${mi}`} className="bg-white rounded-[40px] shadow-sm border border-slate-200 overflow-hidden">
                   <div className="bg-slate-50 px-6 sm:px-10 py-5 border-b font-black text-slate-800 flex flex-wrap items-baseline gap-2 sm:gap-4">
-                    <span className="text-xl sm:text-3xl">{String(year)}年 { String(month + 1) }月</span>
+                    <span className="text-xl sm:text-2xl">{String(year)}年 { String(month + 1) }月</span>
                     <span className="text-[10px] sm:text-sm text-slate-400 font-bold tracking-tight uppercase">
-                      (令和{rY}年 / 平成{hY}年 / 昭和{sY}年)
+                      (R{rY} / H{hY} / S{sY})
                     </span>
                   </div>
                   <div className="grid grid-cols-7 text-center text-[10px] sm:text-xs font-black uppercase py-3 border-b bg-slate-50/50 tracking-[0.2em]">
@@ -276,7 +276,8 @@ export default function App() {
                   </div>
                   <div className="grid grid-cols-7">
                     {days.map((day, i) => {
-                      if (!day) return <div key={`empty-${mi}-${i}`} className="h-24 sm:h-40 border-b border-r border-slate-50 bg-slate-50/10" />;
+                      // 短縮した高さ: スマホ 86px (96-10), PC 150px (160-10)
+                      if (!day) return <div key={`empty-${mi}-${i}`} className="h-[86px] sm:h-[150px] border-b border-r border-slate-50 bg-slate-50/10" />;
                       const ds = toLocalDateString(day);
                       const hol = holidays[ds];
                       const sun = day.getDay() === 0;
@@ -287,7 +288,7 @@ export default function App() {
                       const isSmartphoneClass = wed && !hol;
 
                       return (
-                        <div key={ds} className={`h-24 sm:h-40 border-b border-r border-slate-50 p-1 sm:p-3 flex flex-col relative transition-colors group
+                        <div key={ds} className={`h-[86px] sm:h-[150px] border-b border-r border-slate-50 p-1 sm:p-2.5 flex flex-col relative transition-colors group
                           ${isClosed ? 'bg-red-50 bg-stripes' : isSmartphoneClass ? 'bg-emerald-50' : sun ? 'bg-red-50/10' : ''}`}>
                           <div className="flex flex-col mb-1 overflow-hidden">
                             <span className={`text-base sm:text-lg font-black leading-none ${sun || hol ? 'text-red-600' : 'text-slate-600'}`}>{day.getDate()}</span>
@@ -298,12 +299,10 @@ export default function App() {
                           
                           <div className="flex-1 flex flex-col gap-0 justify-center py-0.5 sm:py-1">
                             {isClosed ? (
-                              /* 祝日・定休日: 「休」を中央表示 */
                               <div className="flex justify-center items-center w-full animate-in zoom-in duration-300">
                                 <HolidayIcon active={true} />
                               </div>
                             ) : isSmartphoneClass ? (
-                              /* 水曜スマホクラス: ラベルのみを中央表示（AM ONLYを削除） */
                               <div className="flex flex-col items-center justify-center w-full h-full animate-in fade-in duration-500">
                                 <div className="bg-emerald-500 text-white px-2 sm:px-4 py-1.5 sm:py-2 rounded-full flex items-center gap-1.5 shadow-sm border border-emerald-600">
                                   <Smartphone size={14} strokeWidth={2.5} className="sm:w-4 sm:h-4" />
@@ -311,7 +310,6 @@ export default function App() {
                                 </div>
                               </div>
                             ) : (
-                              /* 通常営業日: AM & PM 表示 */
                               <>
                                 <button onClick={() => {
                                   if(!isEditMode) return;
@@ -334,7 +332,7 @@ export default function App() {
                               onClick={() => {
                                 const ns = {...schedule, [ds]:{...data, isClosed: !data.isClosed}};
                                 setSchedule(ns); saveToCloud(ns);
-                              }} className={`absolute bottom-1 right-1 sm:bottom-3 sm:right-3 p-1 rounded transition-all z-10 opacity-0 group-hover:opacity-100
+                              }} className={`absolute bottom-1 right-1 sm:bottom-2 sm:right-2 p-1 rounded transition-all z-10 opacity-0 group-hover:opacity-100
                               ${data.isClosed ? 'bg-red-500 text-white opacity-100 shadow-md' : 'bg-white text-slate-300 border border-slate-100 hover:text-red-500'}`}>
                               <Store size={14} className="sm:size-5" />
                             </button>
