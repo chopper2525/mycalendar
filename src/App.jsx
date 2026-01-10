@@ -6,9 +6,9 @@ import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken }
 
 /**
  * アプリケーション設定 & バージョン情報
- * v3.7.7: スマホ表示時のボタン内テキストを 8px に縮小
+ * v3.7.9: パソコン時の横幅制限を 900px に拡大
  */
-const APP_VERSION = "3.7.7";
+const APP_VERSION = "3.7.9";
 const UPDATE_DATE = "2026.01.10";
 
 // Firebaseの設定
@@ -139,8 +139,7 @@ export default function App() {
       <div className={`${base} bg-emerald-500 border-emerald-600 text-white`}>
         <div className="flex items-center justify-center gap-1 w-full text-center">
           <CheckCircle2 size={12} className="shrink-0 sm:w-[14px] sm:h-[14px]" strokeWidth={3} />
-          {/* 修正: 午前/午後ラベルをスマホ表示時 8px に設定 */}
-          <span className="text-[8px] sm:text-xs font-black truncate">{label} 〇</span>
+          <span className="text-[8px] sm:text-xs font-black truncate tracking-tighter sm:tracking-normal">{label} 〇</span>
         </div>
       </div>
     );
@@ -148,15 +147,13 @@ export default function App() {
       <div className={`${base} bg-rose-100 border-rose-300 text-rose-600`}>
         <div className="flex items-center justify-center gap-1 w-full text-center">
           <XCircle size={12} className="shrink-0 sm:w-[14px] sm:h-[14px]" strokeWidth={3} />
-          {/* 修正: 午前/午後ラベルをスマホ表示時 8px に設定 */}
-          <span className="text-[8px] sm:text-xs font-black truncate">{label} ✕</span>
+          <span className="text-[8px] sm:text-xs font-black truncate tracking-tighter sm:tracking-normal">{label} ✕</span>
         </div>
       </div>
     );
     return (
       <div className={`${base} bg-white border-slate-200 border-dashed text-slate-400 opacity-40`}>
-        {/* 修正: 未設定ラベルをスマホ表示時 8px に設定 */}
-        <span className="text-[8px] sm:text-xs font-black">{label} -</span>
+        <span className="text-[8px] sm:text-xs font-black tracking-tighter sm:tracking-normal">{label} -</span>
       </div>
     );
   };
@@ -211,7 +208,9 @@ export default function App() {
         </div>
       )}
 
-      <div className="w-full max-w-3xl mx-auto p-2 sm:p-6 md:p-8 lg:p-12 flex flex-col items-center">
+      {/* 修正: max-w-[900px] に拡大 */}
+      <div className="w-full max-w-[900px] mx-auto p-2 sm:p-6 md:p-8 lg:p-12 flex flex-col items-center">
+        
         <header className="mb-4 w-full flex flex-row justify-between items-center bg-white py-2 px-4 sm:px-6 rounded-2xl shadow-sm border border-slate-100">
           <div className="flex items-center gap-3 text-indigo-600 shrink-0">
             <Calendar size={20} strokeWidth={2.5} />
