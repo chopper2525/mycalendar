@@ -6,9 +6,9 @@ import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken }
 
 /**
  * アプリケーション設定 & バージョン情報
- * v3.6.7: 横幅のさらなるスリム化 (max-w-3xl)
+ * v3.6.0: 7列均等レイアウトへの回帰 + 公式HPリンク追加
  */
-const APP_VERSION = "3.6.7";
+const APP_VERSION = "v3.6.0";
 const UPDATE_DATE = "2026.01.10";
 
 // Firebaseの設定
@@ -22,7 +22,7 @@ const firebaseConfig = {
   measurementId: "G-M2FHT3HR5Q"
 };
 
-// IDを固定して安定動作を優先
+// IDを固定
 const appId = "my-calendar-id";
 
 // 初期化
@@ -92,7 +92,6 @@ export default function App() {
   const [showPassModal, setShowPassModal] = useState(false);
   const [passInput, setPassInput] = useState("");
   const [passError, setPassError] = useState(false);
-  const [todayStr, setTodayStr] = useState("");
 
   // 1. 認証フロー
   useEffect(() => {
@@ -138,11 +137,9 @@ export default function App() {
   // 3. 初期化
   useEffect(() => {
     const today = new Date();
-    setTodayStr(toLocalDateString(today));
-    
     const ms = [];
     const allHolidays = {};
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 6; i++) {
       const d = new Date(today.getFullYear(), today.getMonth() + i, 1);
       const year = d.getFullYear();
       ms.push({ year, month: d.getMonth() });
@@ -166,20 +163,20 @@ export default function App() {
   };
 
   const SlotDisplay = ({ status, label }) => {
-    const base = "flex-1 rounded-xl border flex items-center justify-center transition-all mx-0.5 my-0 shadow-sm min-h-[30px] sm:min-h-[36px] px-1";
+    const base = "flex-1 rounded-xl border-2 flex items-center justify-center transition-all mx-0.5 my-0 shadow-sm min-h-[34px] sm:min-h-[40px] px-1";
     if (status === SLOT_STATUS.AVAILABLE) return (
       <div className={`${base} bg-emerald-500 border-emerald-600 text-white`}>
-        <div className="flex items-center justify-center gap-1 w-full text-center">
-          <CheckCircle2 size={12} className="shrink-0 sm:w-[14px] sm:h-[14px]" strokeWidth={3} />
-          <span className="text-[10px] sm:text-xs font-black truncate">{label} 〇</span>
+        <div className="flex items-center justify-center gap-1 w-full">
+          <CheckCircle2 size={13} className="sm:w-[16px] sm:h-[16px]" strokeWidth={3} />
+          <span className="text-[10px] sm:text-xs font-black truncate">{label}<span className="hidden sm:inline"> 空きあり</span><span className="sm:hidden">◯</span></span>
         </div>
       </div>
     );
     if (status === SLOT_STATUS.UNAVAILABLE) return (
       <div className={`${base} bg-rose-100 border-rose-300 text-rose-600`}>
-        <div className="flex items-center justify-center gap-1 w-full text-center">
-          <XCircle size={12} className="shrink-0 sm:w-[14px] sm:h-[14px]" strokeWidth={3} />
-          <span className="text-[10px] sm:text-xs font-black truncate">{label} ✕</span>
+        <div className="flex items-center justify-center gap-1 w-full">
+          <XCircle size={13} className="sm:w-[16px] sm:h-[16px]" strokeWidth={3} />
+          <span className="text-[10px] sm:text-xs font-black truncate">{label}<span className="hidden sm:inline"> 空きなし</span><span className="sm:hidden">×</span></span>
         </div>
       </div>
     );
@@ -204,7 +201,7 @@ export default function App() {
     <div className="min-h-screen flex items-center justify-center bg-slate-100">
       <div className="flex flex-col items-center gap-4 text-indigo-600">
         <Loader2 className="animate-spin" size={48} strokeWidth={3} />
-        <span className="font-black text-slate-400 tracking-widest uppercase text-xs">Initializing v{APP_VERSION}...</span>
+        <span className="font-black text-slate-400 tracking-widest uppercase text-xs">Initializing {APP_VERSION}...</span>
       </div>
     </div>
   );
@@ -232,8 +229,7 @@ export default function App() {
       )}
 
       <div className="flex flex-col items-center w-full min-h-screen p-2 md:p-8 lg:p-12">
-        {/* 横幅を max-w-3xl に変更してスリム化 */}
-        <div className="w-full max-w-3xl">
+        <div className="w-full max-w-4xl">
           <header className="mb-4 flex flex-row justify-between items-center bg-white py-2 px-4 sm:px-6 rounded-2xl shadow-sm border border-slate-100">
             <div className="flex items-center gap-3 text-indigo-600 shrink-0">
               <Calendar size={20} strokeWidth={2.5} />
@@ -246,15 +242,17 @@ export default function App() {
               </div>
             </div>
 
+            {/* ホームページへ戻るリンクを追加 */}
             <div className="flex-1 px-4 hidden sm:flex justify-center">
               <a href="https://www.whale39.net/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-black text-slate-400 hover:text-indigo-600 transition-colors bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
                 <Home size={14} />
-                <span>公式サイトへ戻る</span>
+                <span>ホームページへ戻る</span>
                 <ExternalLink size={10} className="opacity-50" />
               </a>
             </div>
 
             <div className="flex items-center gap-3 shrink-0">
+              {/* スマホ用ミニリンク */}
               <a href="https://www.whale39.net/" target="_blank" rel="noopener noreferrer" className="sm:hidden text-slate-400 hover:text-indigo-600 transition-colors p-2">
                 <Home size={18} />
               </a>
@@ -286,15 +284,17 @@ export default function App() {
                     </span>
                   </div>
                   
+                  {/* ヘッダー: 日〜土まで均等な grid-cols-7 を使用 */}
                   <div className="grid grid-cols-7 text-center text-[10px] sm:text-xs font-black uppercase py-3 border-b bg-slate-50/50 tracking-[0.1em] sm:tracking-[0.2em]">
                     {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((name, i) => (
-                      <div key={`${name}-${mi}`} className={i===0?'text-red-500':i===6?'text-blue-500':'text-slate-500'}>{String(name)}</div>
+                      <div key={`${name}-${mi}`} className={i===0?'text-red-500':i===6?'text-blue-500':'text-slate-400'}>{String(name)}</div>
                     ))}
                   </div>
                   
+                  {/* ボディ: ヘッダーと同期した grid-cols-7 */}
                   <div className="grid grid-cols-7">
                     {days.map((day, i) => {
-                      if (!day) return <div key={`empty-${mi}-${i}`} className="h-[76px] sm:h-[130px] border-b border-r border-slate-50 bg-slate-50/10" />;
+                      if (!day) return <div key={`empty-${mi}-${i}`} className="h-[86px] sm:h-[150px] border-b border-r border-slate-50 bg-slate-50/10" />;
                       const ds = toLocalDateString(day);
                       const hol = holidays[ds];
                       const sun = day.getDay() === 0;
@@ -303,31 +303,27 @@ export default function App() {
                       
                       const isClosed = data.isClosed || sun || !!hol;
                       const isSmartphoneClass = wed && !hol;
-                      const isToday = ds === todayStr;
 
                       return (
-                        <div key={ds} className={`h-[76px] sm:h-[130px] border-b border-r border-slate-50 p-1 sm:p-2 flex flex-col relative transition-colors group
-                          ${isClosed ? 'bg-red-50 bg-stripes' : isToday ? 'bg-yellow-50' : sun ? 'bg-red-50/10' : ''}`}>
-                          <div className="flex flex-col mb-1 overflow-hidden px-1">
-                            <span className={`text-sm sm:text-base font-black leading-none ${sun || hol ? 'text-red-600' : 'text-slate-600'}`}>
-                              {day.getDate()}
-                              {isToday && <span className="ml-1 text-[8px] sm:text-[10px] text-yellow-600 uppercase tracking-tighter font-black">Today</span>}
-                            </span>
+                        <div key={ds} className={`h-[86px] sm:h-[150px] border-b border-r border-slate-50 p-1 sm:p-2.5 flex flex-col relative transition-colors group
+                          ${isClosed ? 'bg-red-50 bg-stripes' : isSmartphoneClass ? 'bg-emerald-50' : sun ? 'bg-red-50/10' : ''}`}>
+                          <div className="flex flex-col mb-1 overflow-hidden">
+                            <span className={`text-base sm:text-lg font-black leading-none ${sun || hol ? 'text-red-600' : 'text-slate-600'}`}>{day.getDate()}</span>
                             {hol && (
                               <span className="text-[7px] sm:text-[9px] text-red-500 font-black leading-tight truncate bg-red-100/50 px-1 rounded mt-1">{String(hol)}</span>
                             )}
                           </div>
                           
-                          <div className="flex-1 flex flex-col gap-0 justify-center py-0.5 sm:py-1 px-1">
+                          <div className="flex-1 flex flex-col gap-0 justify-center py-0.5 sm:py-1">
                             {isClosed ? (
                               <div className="flex justify-center items-center w-full animate-in zoom-in duration-300">
                                 <HolidayIcon active={true} />
                               </div>
                             ) : isSmartphoneClass ? (
                               <div className="flex flex-col items-center justify-center w-full h-full animate-in fade-in duration-500">
-                                <div className="bg-sky-500 text-white px-2 py-1 sm:py-1.5 rounded-full flex items-center gap-1 shadow-sm border border-sky-600 overflow-hidden">
-                                  <Smartphone size={11} strokeWidth={2.5} className="shrink-0" />
-                                  <span className="text-[9px] sm:text-[10px] font-black tracking-tighter whitespace-nowrap">スマホクラス</span>
+                                <div className="bg-emerald-500 text-white px-2 py-1.5 rounded-full flex items-center gap-1 shadow-sm border border-emerald-600 overflow-hidden">
+                                  <Smartphone size={12} strokeWidth={2.5} className="shrink-0" />
+                                  <span className="text-[9px] sm:text-xs font-black tracking-tighter whitespace-nowrap">スマホクラス</span>
                                 </div>
                               </div>
                             ) : (
@@ -337,13 +333,13 @@ export default function App() {
                                   const next = data.am==='none'?'available':data.am==='available'?'unavailable':'none';
                                   const ns = {...schedule, [ds]:{...data, am:next}};
                                   setSchedule(ns); saveToCloud(ns);
-                                }} disabled={!isEditMode} className="flex flex-1 min-h-0"><SlotDisplay status={data.am} label="午前" /></button>
+                                }} disabled={!isEditMode} className="flex flex-1 min-h-0"><SlotDisplay status={data.am} label="AM" /></button>
                                 <button onClick={() => {
                                   if(!isEditMode) return;
                                   const next = data.pm==='none'?'available':data.pm==='available'?'unavailable':'none';
                                   const ns = {...schedule, [ds]:{...data, pm:next}};
                                   setSchedule(ns); saveToCloud(ns);
-                                }} disabled={!isEditMode} className="flex flex-1 min-h-0"><SlotDisplay status={data.pm} label="午後" /></button>
+                                }} disabled={!isEditMode} className="flex flex-1 min-h-0"><SlotDisplay status={data.pm} label="PM" /></button>
                               </>
                             )}
                           </div>
@@ -353,9 +349,9 @@ export default function App() {
                               onClick={() => {
                                 const ns = {...schedule, [ds]:{...data, isClosed: !data.isClosed}};
                                 setSchedule(ns); saveToCloud(ns);
-                              }} className={`absolute bottom-0.5 right-0.5 sm:bottom-1.5 sm:right-1.5 p-1 rounded transition-all z-10 opacity-0 group-hover:opacity-100
+                              }} className={`absolute bottom-1 right-1 sm:bottom-2 sm:right-2 p-1 rounded transition-all z-10 opacity-0 group-hover:opacity-100
                               ${data.isClosed ? 'bg-red-500 text-white opacity-100 shadow-md' : 'bg-white text-slate-300 border border-slate-100 hover:text-red-500'}`}>
-                              <Store size={12} className="sm:size-4" />
+                              <Store size={14} className="sm:size-5" />
                             </button>
                           )}
                         </div>
@@ -369,8 +365,9 @@ export default function App() {
           
           <footer className="mt-12 mb-16 text-center border-t border-slate-100 pt-8">
             <div className="inline-flex flex-col items-center gap-3 text-slate-300">
+              <ChevronDown size={32} className="animate-bounce" strokeWidth={3} />
               <div className="flex flex-col items-center gap-1">
-                <span className="text-[10px] font-black tracking-widest uppercase italic text-slate-400 underline decoration-slate-200">Stable Build v{APP_VERSION}</span>
+                <span className="text-[10px] font-black tracking-widest uppercase italic text-slate-400 underline decoration-slate-200">Stable Build {APP_VERSION}</span>
                 <span className="text-[8px] font-bold text-slate-300 uppercase">Released: {UPDATE_DATE}</span>
               </div>
             </div>
