@@ -84,7 +84,7 @@ const getJapaneseHolidays = (year) => {
 };
 
 /**
- * 改良版：定休日アイコン（シャッターと看板のイメージ）
+ * 定休日アイコン
  */
 const HolidayIcon = ({ active, className }) => (
   <div className={`relative flex flex-col items-center justify-center ${className}`}>
@@ -229,17 +229,18 @@ export default function App() {
 
       <div className="flex flex-col items-center w-full min-h-screen p-4 md:p-10 lg:p-16">
         <div className="w-full max-w-6xl">
-          <header className="mb-8 flex flex-col md:flex-row justify-between items-center bg-white p-4 md:p-6 rounded-3xl shadow-sm border border-slate-200 gap-4">
-            <div className="flex items-center gap-3 text-indigo-600">
-              <div className="bg-indigo-100 p-2 rounded-xl">
-                <Calendar size={24} strokeWidth={3} />
-              </div>
-              <h1 className="text-xl md:text-2xl font-black tracking-tighter italic uppercase leading-none">Whale Calendar</h1>
+          {/* ヘッダー：高さを極力低く(py-2) マージンも縮小(mb-4) */}
+          <header className="mb-4 flex flex-col md:flex-row justify-between items-center bg-white py-2 px-4 md:px-6 rounded-2xl shadow-sm border border-slate-100 gap-2">
+            <div className="flex items-center gap-2 text-indigo-600">
+              <Calendar size={18} strokeWidth={2.5} />
+              {/* タイトル：極細かつコンパクト */}
+              <h1 className="text-lg font-thin tracking-tighter italic uppercase leading-none">Whale Calendar</h1>
             </div>
-            <div className="flex items-center gap-4">
-              {saving && <span className="text-[10px] text-indigo-500 font-black animate-pulse uppercase tracking-widest">Saving...</span>}
-              <button onClick={() => isEditMode ? setIsEditMode(false) : setShowPassModal(true)} className={`px-4 py-2 rounded-xl font-black text-sm shadow-md transition-all active:scale-95 ${isEditMode ? 'bg-slate-900 text-white' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}>
-                {isEditMode ? '編集を終了する' : '編集モード'}
+            <div className="flex items-center gap-3">
+              {saving && <span className="text-[9px] text-indigo-500 font-black animate-pulse uppercase tracking-widest">Saving...</span>}
+              {/* 編集ボタン：極小サイズ */}
+              <button onClick={() => isEditMode ? setIsEditMode(false) : setShowPassModal(true)} className={`px-3 py-1 rounded-lg font-black text-[10px] shadow-sm transition-all active:scale-95 ${isEditMode ? 'bg-slate-900 text-white' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}>
+                {isEditMode ? '編集終了' : '編集モード'}
               </button>
             </div>
           </header>
@@ -257,6 +258,7 @@ export default function App() {
 
               // 和暦計算
               const reiwaYear = year - 2018;
+              const heiseiYear = year - 1988;
               const showaYear = year - 1925;
 
               return (
@@ -264,7 +266,7 @@ export default function App() {
                   <div className="bg-slate-50 px-10 py-6 border-b font-black text-slate-800 flex items-baseline gap-4">
                     <span className="text-3xl">{year}年 { month + 1 }月</span>
                     <span className="text-sm text-slate-400 font-bold uppercase tracking-tight">
-                      (令和{reiwaYear}年 / 昭和{showaYear}年)
+                      (令和{reiwaYear}年 / 平成{heiseiYear}年 / 昭和{showaYear}年)
                     </span>
                   </div>
                   <div className="grid grid-cols-7 text-center text-sm font-black uppercase py-4 border-b bg-slate-50/50 tracking-[0.2em]">
