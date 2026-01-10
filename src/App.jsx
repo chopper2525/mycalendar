@@ -20,7 +20,7 @@ const firebaseConfig = {
 const appId = "my-calendar-id";
 
 /**
- * 日付オブジェクトを "YYYY-MM-DD" 形式の文字列（ローカル時間）に変換するヘルパー
+ * 日付オブジェクトを "YYYY-MM-DD" 形式の文字列（ローカル時間）に変換
  */
 const toLocalDateString = (date) => {
   const y = date.getFullYear();
@@ -84,18 +84,13 @@ const getJapaneseHolidays = (year) => {
 };
 
 /**
- * 改良版：定休日アイコン（レスポンシブ対応）
+ * 修正版：定休日アイコン（「休」の囲い文字：さらに小型化）
  */
 const HolidayIcon = ({ active, className }) => (
-  <div className={`relative flex flex-col items-center justify-center w-full px-0.5 ${className}`}>
-    <div className={`w-full h-1 sm:h-1.5 mb-1 rounded-full ${active ? 'bg-slate-500' : 'bg-slate-200'}`} />
-    <div className={`relative w-full p-1 sm:p-3 rounded-lg sm:rounded-2xl border-2 transition-all duration-300 flex flex-col items-center gap-0.5
-      ${active ? 'bg-slate-100 border-slate-400 shadow-inner scale-105 sm:scale-110' : 'bg-white border-slate-100 opacity-30'}`}>
-      <Store size={20} className={`${active ? 'text-slate-500' : 'text-slate-300'} sm:hidden`} />
-      <Store size={28} className={`${active ? 'text-slate-600' : 'text-slate-300'} hidden sm:block`} />
-      <span className={`text-[8px] sm:text-xs font-black tracking-tighter leading-none whitespace-nowrap
-        ${active ? 'text-slate-700' : 'text-slate-300'}`}>定休日</span>
-    </div>
+  <div className={`flex items-center justify-center border rounded-full transition-all duration-300 
+    ${active ? 'bg-white border-red-300 text-red-500 shadow-sm scale-105' : 'bg-white border-slate-100 opacity-20'}
+    w-6 h-6 sm:w-8 sm:h-8 ${className}`}>
+    <span className="text-[8px] sm:text-xs font-black leading-none">休</span>
   </div>
 );
 
@@ -169,16 +164,16 @@ export default function App() {
   };
 
   /**
-   * 改良版：スロット表示（スマホでのはみ出し対策）
+   * スロット表示（高さを抑えめにしたバージョン）
    */
   const SlotDisplay = ({ status, label }) => {
-    const base = "flex-1 rounded-xl border-2 flex items-center justify-center transition-all m-0.5 shadow-sm min-h-[44px] px-1";
+    const base = "flex-1 rounded-lg sm:rounded-xl border-2 flex items-center justify-center transition-all m-0.5 shadow-sm min-h-[34px] sm:min-h-[38px] px-1";
     
     if (status === SLOT_STATUS.AVAILABLE) return (
       <div className={`${base} bg-emerald-500 border-emerald-600 text-white`}>
         <div className="flex items-center justify-center gap-0.5 sm:gap-1.5 w-full">
-          <CheckCircle2 size={14} className="sm:w-[18px] sm:h-[18px]" strokeWidth={3} />
-          <span className="text-[10px] sm:text-xs font-black truncate">{label}<span className="hidden sm:inline"> 空きあり</span><span className="sm:hidden">◯</span></span>
+          <CheckCircle2 size={12} className="sm:w-4 sm:h-4" strokeWidth={3} />
+          <span className="text-[9px] sm:text-xs font-black truncate">{label}<span className="hidden sm:inline"> 空きあり</span><span className="sm:hidden">◯</span></span>
         </div>
       </div>
     );
@@ -186,21 +181,21 @@ export default function App() {
     if (status === SLOT_STATUS.UNAVAILABLE) return (
       <div className={`${base} bg-rose-100 border-rose-300 text-rose-600`}>
         <div className="flex items-center justify-center gap-0.5 sm:gap-1.5 w-full">
-          <XCircle size={14} className="sm:w-[18px] sm:h-[18px]" strokeWidth={3} />
-          <span className="text-[10px] sm:text-xs font-black truncate">{label}<span className="hidden sm:inline"> 空きなし</span><span className="sm:hidden">×</span></span>
+          <XCircle size={12} className="sm:w-4 sm:h-4" strokeWidth={3} />
+          <span className="text-[9px] sm:text-xs font-black truncate">{label}<span className="hidden sm:inline"> 空きなし</span><span className="sm:hidden">×</span></span>
         </div>
       </div>
     );
     
     return (
-      <div className={`${base} bg-white border-slate-200 border-dashed text-slate-400`}>
-        <span className="text-[10px] sm:text-xs font-black opacity-40">{label}<span className="hidden sm:inline"> -</span></span>
+      <div className={`${base} bg-white border-slate-200 border-dashed text-slate-400 opacity-30`}>
+        <span className="text-[9px] sm:text-xs font-black">{label}<span className="hidden sm:inline"> -</span></span>
       </div>
     );
   };
 
   if (errorMsg) return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 p-6">
+    <div className="min-h-screen flex items-center justify-center bg-slate-100 p-6 text-slate-900">
       <div className="bg-white p-10 rounded-3xl shadow-xl border-t-8 border-rose-500 max-w-md w-full text-center">
         <h2 className="text-rose-600 font-black text-2xl mb-4 flex items-center justify-center gap-2"><AlertTriangle size={32} /> エラー</h2>
         <p className="text-base text-slate-700 font-bold mb-8">{errorMsg}</p>
@@ -219,18 +214,18 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
       <style>{`
         .bg-stripes {
-          background-image: linear-gradient(45deg, #f1f5f9 25%, transparent 25%, transparent 50%, #f1f5f9 50%, #f1f5f9 75%, transparent 75%, transparent);
-          background-size: 12px 12px;
+          background-image: linear-gradient(45deg, #fee2e2 25%, transparent 25%, transparent 50%, #fee2e2 50%, #fee2e2 75%, transparent 75%, transparent);
+          background-size: 10px 10px;
         }
       `}</style>
 
       {showPassModal && (
         <div className="fixed inset-0 z-[200] bg-slate-900/70 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white p-8 rounded-[40px] w-full max-w-sm shadow-2xl">
-            <h3 className="text-2xl font-black mb-6 flex items-center gap-3 text-indigo-700"><KeyRound size={28}/> パスワード入力</h3>
+          <div className="bg-white p-8 rounded-[40px] w-full max-w-sm shadow-2xl text-center">
+            <h3 className="text-2xl font-black mb-6 flex items-center gap-3 text-indigo-700 justify-center"><KeyRound size={28}/> 認証</h3>
             <form onSubmit={e => { e.preventDefault(); if(passInput==="0120"){ setIsEditMode(true); setShowPassModal(false); } else { setPassError(true); } }}>
               <input type="password" value={passInput} onChange={e=>setPassInput(e.target.value)} autoFocus placeholder="••••" className={`w-full p-4 border-4 rounded-2xl text-center text-2xl font-black mb-6 outline-none transition-all ${passError?'border-rose-400 bg-rose-50 text-rose-600':'border-slate-100 bg-slate-50 focus:border-indigo-400'}`} />
               <button type="submit" className="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black text-xl shadow-xl shadow-indigo-200 active:scale-95 transition-all mb-3">ログイン</button>
@@ -240,23 +235,23 @@ export default function App() {
         </div>
       )}
 
-      <div className="flex flex-col items-center w-full min-h-screen p-2 md:p-10 lg:p-16">
+      <div className="flex flex-col items-center w-full min-h-screen p-2 md:p-8">
         <div className="w-full max-w-6xl">
-          <header className="mb-4 flex flex-col md:flex-row justify-between items-center bg-white py-2 px-4 md:px-6 rounded-2xl shadow-sm border border-slate-100 gap-2">
+          <header className="mb-3 flex flex-row justify-between items-center bg-white py-2 px-3 sm:px-6 rounded-2xl shadow-sm border border-slate-100">
             <div className="flex items-center gap-2 text-indigo-600">
               <Calendar size={18} strokeWidth={2.5} />
-              <h1 className="text-lg font-thin tracking-tighter italic uppercase leading-none">Whale Calendar</h1>
+              <h1 className="text-sm sm:text-lg font-thin tracking-tighter italic uppercase leading-none truncate">Whale Calendar</h1>
             </div>
             <div className="flex items-center gap-3">
-              {saving && <span className="text-[9px] text-indigo-500 font-black animate-pulse uppercase tracking-widest">Saving...</span>}
-              <button onClick={() => isEditMode ? setIsEditMode(false) : setShowPassModal(true)} className={`px-3 py-1 rounded-lg font-black text-[10px] shadow-sm transition-all active:scale-95 ${isEditMode ? 'bg-slate-900 text-white' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}>
+              {saving && <span className="text-[8px] text-indigo-500 font-black animate-pulse">SAVING</span>}
+              <button onClick={() => isEditMode ? setIsEditMode(false) : setShowPassModal(true)} className={`px-2 py-1 rounded-lg font-black text-[9px] sm:text-[10px] shadow-sm transition-all active:scale-95 ${isEditMode ? 'bg-slate-900 text-white' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}>
                 {isEditMode ? '編集終了' : '編集モード'}
               </button>
             </div>
           </header>
 
-          <main className="grid grid-cols-1 gap-12">
-            {months.map(({year, month}) => {
+          <main className="grid grid-cols-1 gap-6 sm:gap-10">
+            {months.map(({year, month}, mi) => {
               const first = new Date(year, month, 1);
               const days = [];
               for (let i = 0; i < first.getDay(); i++) days.push(null);
@@ -271,21 +266,22 @@ export default function App() {
               const showaYear = year - 1925;
 
               return (
-                <div key={`${year}-${month}`} className="bg-white rounded-[40px] md:rounded-[48px] shadow-sm border border-slate-200 overflow-hidden">
-                  <div className="bg-slate-50 px-6 md:px-10 py-4 md:py-6 border-b font-black text-slate-800 flex items-baseline gap-2 md:gap-4">
-                    <span className="text-xl md:text-3xl">{year}年 { month + 1 }月</span>
-                    <span className="text-[10px] md:text-sm text-slate-400 font-bold uppercase tracking-tight">
-                      (令和{reiwaYear} / 平成{heiseiYear} / 昭和{showaYear})
+                <div key={`${year}-${month}`} className="bg-white rounded-[32px] sm:rounded-[40px] shadow-sm border border-slate-200 overflow-hidden">
+                  <div className="bg-slate-50 px-4 sm:px-8 py-3 sm:py-5 border-b font-black flex flex-wrap items-baseline gap-2 sm:gap-4">
+                    <span className="text-lg sm:text-2xl">{year}年 { month + 1 }月</span>
+                    <span className="text-[9px] sm:text-xs text-slate-400 font-bold uppercase tracking-tight">
+                      <span className="hidden sm:inline">(令和{reiwaYear}年 / 平成{heiseiYear}年 / 昭和{showaYear}年)</span>
+                      <span className="sm:hidden">(R{reiwaYear} / H{heiseiYear} / S{showaYear})</span>
                     </span>
                   </div>
-                  <div className="grid grid-cols-7 text-center text-[10px] md:text-sm font-black uppercase py-3 md:py-4 border-b bg-slate-50/50 tracking-wider md:tracking-[0.2em]">
+                  <div className="grid grid-cols-7 text-center text-[10px] sm:text-xs font-black uppercase py-2 sm:py-3 border-b bg-slate-50/50">
                     {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((name, i) => (
-                      <div key={name} className={i===0?'text-red-500':i===6?'text-blue-500':'text-slate-400'}>{name}</div>
+                      <div key={`${name}-${mi}-${i}`} className={i===0?'text-red-500':i===6?'text-blue-500':'text-slate-400'}>{name}</div>
                     ))}
                   </div>
                   <div className="grid grid-cols-7">
                     {days.map((day, i) => {
-                      if (!day) return <div key={i} className="h-32 sm:h-48 border-b border-r border-slate-100 bg-slate-50/10" />;
+                      if (!day) return <div key={`empty-${mi}-${i}`} className="h-24 sm:h-40 border-b border-r border-slate-50 bg-slate-50/10" />;
                       const ds = toLocalDateString(day);
                       const hol = holidays[ds];
                       const sun = day.getDay() === 0;
@@ -294,16 +290,16 @@ export default function App() {
                       const isClosed = data.isClosed || sun || !!hol;
 
                       return (
-                        <div key={ds} className={`h-32 sm:h-48 border-b border-r border-slate-100 p-1 md:p-3 flex flex-col relative transition-colors group
-                          ${sun ? 'bg-red-50/10' : ''} ${isClosed ? 'bg-stripes' : ''}`}>
-                          <div className="flex flex-col mb-1 md:mb-3">
-                            <span className={`text-base md:text-lg font-black ${sun || hol ? 'text-red-600' : 'text-slate-600'}`}>{day.getDate()}</span>
-                            {hol && <span className="text-[8px] md:text-xs text-red-500 font-black leading-tight truncate mt-0.5 bg-red-50 px-1 py-0.5 rounded-md inline-block self-start">{hol}</span>}
+                        <div key={ds} className={`h-24 sm:h-40 border-b border-r border-slate-50 p-1 sm:p-2 flex flex-col relative transition-colors group
+                          ${isClosed ? 'bg-red-50 bg-stripes' : sun ? 'bg-red-50/10' : ''}`}>
+                          <div className="flex flex-col mb-0.5 sm:mb-2 overflow-hidden">
+                            <span className={`text-sm sm:text-lg font-black leading-none ${sun || hol ? 'text-red-600' : 'text-slate-600'}`}>{day.getDate()}</span>
+                            {hol && <span className="text-[7px] sm:text-[9px] text-red-500 font-black leading-tight truncate mt-0.5 bg-red-100 px-1 rounded">{hol}</span>}
                           </div>
-                          <div className="flex-1 flex flex-col gap-1 md:gap-2 justify-center py-1">
+                          <div className="flex-1 flex flex-col gap-1 sm:gap-2 justify-center py-0.5 sm:py-1">
                             {isClosed ? (
-                              <div className="flex justify-center items-center w-full">
-                                <HolidayIcon active={true} className="max-w-[48px] sm:max-w-[80px]" />
+                              <div className="flex justify-center items-center w-full animate-in zoom-in duration-300">
+                                <HolidayIcon active={true} />
                               </div>
                             ) : (
                               <>
@@ -312,26 +308,24 @@ export default function App() {
                                   const next = data.am==='none'?'available':data.am==='available'?'unavailable':'none';
                                   const ns = {...schedule, [ds]:{...data, am:next}};
                                   setSchedule(ns); saveToCloud(ns);
-                                }} disabled={!isEditMode} className="flex flex-1"><SlotDisplay status={data.am} label="AM" /></button>
+                                }} disabled={!isEditMode} className="flex flex-1 min-h-0"><SlotDisplay status={data.am} label="AM" /></button>
                                 <button onClick={() => {
                                   if(!isEditMode) return;
                                   const next = data.pm==='none'?'available':data.pm==='available'?'unavailable':'none';
                                   const ns = {...schedule, [ds]:{...data, pm:next}};
                                   setSchedule(ns); saveToCloud(ns);
-                                }} disabled={!isEditMode} className="flex flex-1"><SlotDisplay status={data.pm} label="PM" /></button>
+                                }} disabled={!isEditMode} className="flex flex-1 min-h-0"><SlotDisplay status={data.pm} label="PM" /></button>
                               </>
                             )}
                           </div>
                           {isEditMode && !sun && !hol && (
                             <button 
-                              title="定休日の切り替え"
                               onClick={() => {
                                 const ns = {...schedule, [ds]:{...data, isClosed: !data.isClosed}};
                                 setSchedule(ns); saveToCloud(ns);
-                              }} className={`absolute bottom-1 right-1 md:bottom-3 md:right-3 p-1 md:p-3 rounded-xl transition-all z-10 shadow-lg
-                              ${data.isClosed ? 'bg-slate-800 text-white scale-110' : 'bg-white text-slate-300 border-2 border-slate-100 opacity-0 group-hover:opacity-100 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300'}`}>
-                              <Store size={14} className="md:hidden" />
-                              <Store size={22} className="hidden md:block" strokeWidth={2.5} />
+                              }} className={`absolute bottom-0.5 right-0.5 sm:bottom-1.5 sm:right-1.5 p-1 rounded transition-all z-10 opacity-0 group-hover:opacity-100
+                              ${data.isClosed ? 'bg-red-500 text-white opacity-100 shadow-md' : 'bg-white text-slate-300 border border-slate-100 hover:text-red-500'}`}>
+                              <Store size={10} />
                             </button>
                           )}
                         </div>
@@ -343,10 +337,10 @@ export default function App() {
             })}
           </main>
           
-          <footer className="mt-20 mb-24 text-center">
+          <footer className="mt-12 mb-16 text-center">
             <div className="inline-flex flex-col items-center gap-4 text-slate-300">
-              <ChevronDown size={40} className="animate-bounce" strokeWidth={3} />
-              <span className="text-sm font-black tracking-[0.3em] uppercase italic">Whale Calendar Engine v2.0</span>
+              <ChevronDown size={24} className="animate-bounce" strokeWidth={3} />
+              <span className="text-[10px] font-black tracking-[0.3em] uppercase italic">Stable Engine v2.6</span>
             </div>
           </footer>
         </div>
