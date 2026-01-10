@@ -6,9 +6,9 @@ import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken }
 
 /**
  * アプリケーション設定 & バージョン情報
- * v3.4.5: セルの縦幅を精密に10px短縮 (PC: 150px / Mobile: 86px)
+ * v3.5.1: 日曜スリム化 + 月〜土の完全均等レイアウト
  */
-const APP_VERSION = "v3.4.5";
+const APP_VERSION = "v3.5.1";
 const UPDATE_DATE = "2026.01.10";
 
 // Firebaseの設定
@@ -73,8 +73,8 @@ const getJapaneseHolidays = (year) => {
 const HolidayIcon = ({ active }) => (
   <div className={`flex items-center justify-center border rounded-full transition-all duration-300 
     ${active ? 'bg-white border-red-300 text-red-500 shadow-sm scale-110' : 'bg-white border-slate-100 opacity-20'}
-    w-7 h-7 sm:w-8 sm:h-8`}>
-    <span className="text-[9px] sm:text-xs font-black">休</span>
+    w-6 h-6 sm:w-8 sm:h-8`}>
+    <span className="text-[10px] sm:text-xs font-black">休</span>
   </div>
 );
 
@@ -213,6 +213,11 @@ export default function App() {
           background-image: linear-gradient(45deg, #fee2e2 25%, transparent 25%, transparent 50%, #fee2e2 50%, #fee2e2 75%, transparent 75%, transparent);
           background-size: 10px 10px;
         }
+        /* 日曜のみ 0.7、月〜土は 1.0 ずつ均等に割り当て */
+        .grid-custom-cols {
+          display: grid;
+          grid-template-columns: 0.7fr 1fr 1fr 1fr 1fr 1fr 1fr;
+        }
       `}</style>
 
       {showPassModal && (
@@ -269,14 +274,17 @@ export default function App() {
                       (R{rY} / H{hY} / S{sY})
                     </span>
                   </div>
-                  <div className="grid grid-cols-7 text-center text-[10px] sm:text-xs font-black uppercase py-3 border-b bg-slate-50/50 tracking-[0.2em]">
+                  
+                  {/* ヘッダー: 日曜は狭く、月曜〜土曜は 1fr で完全に均等 */}
+                  <div className="grid-custom-cols text-center text-[10px] sm:text-xs font-black uppercase py-3 border-b bg-slate-50/50 tracking-[0.1em] sm:tracking-[0.2em]">
                     {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((name, i) => (
                       <div key={`${name}-${mi}`} className={i===0?'text-red-500':i===6?'text-blue-500':'text-slate-400'}>{String(name)}</div>
                     ))}
                   </div>
-                  <div className="grid grid-cols-7">
+                  
+                  {/* ボディ: ヘッダーと同期したグリッド */}
+                  <div className="grid-custom-cols">
                     {days.map((day, i) => {
-                      // 短縮した高さ: スマホ 86px (96-10), PC 150px (160-10)
                       if (!day) return <div key={`empty-${mi}-${i}`} className="h-[86px] sm:h-[150px] border-b border-r border-slate-50 bg-slate-50/10" />;
                       const ds = toLocalDateString(day);
                       const hol = holidays[ds];
@@ -304,9 +312,9 @@ export default function App() {
                               </div>
                             ) : isSmartphoneClass ? (
                               <div className="flex flex-col items-center justify-center w-full h-full animate-in fade-in duration-500">
-                                <div className="bg-emerald-500 text-white px-2 sm:px-4 py-1.5 sm:py-2 rounded-full flex items-center gap-1.5 shadow-sm border border-emerald-600">
-                                  <Smartphone size={14} strokeWidth={2.5} className="sm:w-4 sm:h-4" />
-                                  <span className="text-[10px] sm:text-xs font-black tracking-tighter whitespace-nowrap">スマホクラス</span>
+                                <div className="bg-emerald-500 text-white px-2 py-1.5 rounded-full flex items-center gap-1 shadow-sm border border-emerald-600 overflow-hidden">
+                                  <Smartphone size={12} strokeWidth={2.5} className="shrink-0" />
+                                  <span className="text-[9px] sm:text-xs font-black tracking-tighter whitespace-nowrap">スマホクラス</span>
                                 </div>
                               </div>
                             ) : (
