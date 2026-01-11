@@ -6,9 +6,9 @@ import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken }
 
 /**
  * アプリケーション設定 & バージョン情報
- * v3.8.1: スマホ表示時の日付消失バグを修正（セル高さを80pxへ微増、クリッピング解除）
+ * v3.8.2: スマホ表示時のボタン高さをさらにコンパクトに (min-h-[26px])
  */
-const APP_VERSION = "3.8.1";
+const APP_VERSION = "3.8.2";
 const UPDATE_DATE = "2026.01.11";
 
 // Firebaseの設定
@@ -134,7 +134,8 @@ export default function App() {
   };
 
   const SlotDisplay = ({ status, label }) => {
-    const base = "flex-1 rounded-xl border flex items-center justify-center transition-all mx-0.5 my-0 shadow-sm min-h-[30px] sm:min-h-[36px] px-1";
+    /* 修正: スマホ時のボタン最小高さを 26px に変更 */
+    const base = "flex-1 rounded-xl border flex items-center justify-center transition-all mx-0.5 my-0 shadow-sm min-h-[26px] sm:min-h-[36px] px-1";
     if (status === SLOT_STATUS.AVAILABLE) return (
       <div className={`${base} bg-emerald-500 border-emerald-600 text-white`}>
         <div className="flex items-center justify-center gap-1 w-full text-center">
@@ -278,7 +279,6 @@ export default function App() {
                 </div>
                 <div className="grid grid-cols-7">
                   {days.map((day, i) => {
-                    /* 修正: スマホ時のセルの高さを 80px に微増 */
                     if (!day) return <div key={`empty-${mi}-${i}`} className="h-[80px] sm:h-[130px] border-b border-r border-slate-50 bg-slate-50/10" />;
                     const ds = toLocalDateString(day);
                     const hol = holidays[ds];
@@ -292,7 +292,6 @@ export default function App() {
                       <div key={ds} className={`h-[80px] sm:h-[130px] border-b border-r border-slate-50 p-1 sm:p-2 flex flex-col relative transition-colors group
                         ${isClosed ? 'bg-red-50 bg-stripes' : isToday ? 'bg-yellow-50' : sun ? 'bg-red-50/10' : ''}`}>
                         
-                        {/* 修正: overflow-hidden を削除して日付の消失を防止 */}
                         <div className="flex flex-col mb-1 px-1">
                           <span className={`text-sm sm:text-base font-black leading-none ${sun || hol ? 'text-red-600' : 'text-slate-600'}`}>
                             {day.getDate()}
