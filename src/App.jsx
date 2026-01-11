@@ -6,10 +6,10 @@ import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken }
 
 /**
  * アプリケーション設定 & バージョン情報
- * v3.7.9: 横幅900px / 3ヶ月表示 / スマホ文字サイズ最適化
+ * v3.8.1: スマホ表示時の日付消失バグを修正（セル高さを80pxへ微増、クリッピング解除）
  */
-const APP_VERSION = "3.7.9";
-const UPDATE_DATE = "2026.01.10";
+const APP_VERSION = "3.8.1";
+const UPDATE_DATE = "2026.01.11";
 
 // Firebaseの設定
 const firebaseConfig = {
@@ -278,7 +278,8 @@ export default function App() {
                 </div>
                 <div className="grid grid-cols-7">
                   {days.map((day, i) => {
-                    if (!day) return <div key={`empty-${mi}-${i}`} className="h-[76px] sm:h-[130px] border-b border-r border-slate-50 bg-slate-50/10" />;
+                    /* 修正: スマホ時のセルの高さを 80px に微増 */
+                    if (!day) return <div key={`empty-${mi}-${i}`} className="h-[80px] sm:h-[130px] border-b border-r border-slate-50 bg-slate-50/10" />;
                     const ds = toLocalDateString(day);
                     const hol = holidays[ds];
                     const sun = day.getDay() === 0;
@@ -288,9 +289,11 @@ export default function App() {
                     const isSmartphoneClass = wed && !hol;
                     const isToday = ds === todayStr;
                     return (
-                      <div key={ds} className={`h-[76px] sm:h-[130px] border-b border-r border-slate-50 p-1 sm:p-2 flex flex-col relative transition-colors group
+                      <div key={ds} className={`h-[80px] sm:h-[130px] border-b border-r border-slate-50 p-1 sm:p-2 flex flex-col relative transition-colors group
                         ${isClosed ? 'bg-red-50 bg-stripes' : isToday ? 'bg-yellow-50' : sun ? 'bg-red-50/10' : ''}`}>
-                        <div className="flex flex-col mb-1 overflow-hidden px-1">
+                        
+                        {/* 修正: overflow-hidden を削除して日付の消失を防止 */}
+                        <div className="flex flex-col mb-1 px-1">
                           <span className={`text-sm sm:text-base font-black leading-none ${sun || hol ? 'text-red-600' : 'text-slate-600'}`}>
                             {day.getDate()}
                             {isToday && <span className="ml-1 text-[6.5px] sm:text-[10px] text-yellow-600 uppercase tracking-tighter font-black">Today</span>}
@@ -299,6 +302,7 @@ export default function App() {
                             <span className="text-[7px] sm:text-[9px] text-red-500 font-black leading-tight truncate bg-red-100/50 px-1 rounded mt-1">{String(hol)}</span>
                           )}
                         </div>
+                        
                         <div className="flex-1 flex flex-col gap-0 justify-center py-0.5 sm:py-1 px-1">
                           {isClosed ? (
                             <div className="flex justify-center items-center w-full animate-in zoom-in duration-300">
